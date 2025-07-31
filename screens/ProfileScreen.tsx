@@ -74,24 +74,42 @@ export const ProfileScreen = () => {
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="bg-white px-6 py-6 shadow-sm">
-          <View className="mb-4 flex-row items-center">
-            <View className="mr-4 h-20 w-20 items-center justify-center rounded-full bg-blue-500">
-              <Text className="text-3xl text-white">👤</Text>
-            </View>
-            <View className="flex-1">
-              <Text className="mb-1 text-2xl font-bold text-gray-800">
-                {isAuthenticated ? user?.username : '未登录'}
-              </Text>
-              <Text className="text-base text-gray-500">
-                {isAuthenticated ? (user?.email || user?.phone || '暂无联系方式') : '请先登录或注册'}
-              </Text>
-              {isAuthenticated && (
+          {isAuthenticated ? (
+            <View className="mb-4 flex-row items-center">
+              <View className="mr-4 h-20 w-20 items-center justify-center rounded-full bg-blue-500">
+                <Text className="text-3xl text-white">👤</Text>
+              </View>
+              <View className="flex-1">
+                <Text className="mb-1 text-2xl font-bold text-gray-800">
+                  {user?.username}
+                </Text>
+                <Text className="text-base text-gray-500">
+                  {user?.email || user?.phone || '暂无联系方式'}
+                </Text>
                 <Text className="text-sm text-green-600">
                   状态: {user?.status} | 角色: {user?.roles.join(', ')}
                 </Text>
-              )}
+              </View>
             </View>
-          </View>
+          ) : (
+            <TouchableOpacity
+              className="mb-4 flex-row items-center"
+              onPress={() => navigation.navigate('Login')}
+            >
+              <View className="mr-4 h-20 w-20 items-center justify-center rounded-full bg-blue-500">
+                <Text className="text-3xl text-white">👤</Text>
+              </View>
+              <View className="flex-1">
+                <Text className="mb-1 text-2xl font-bold text-gray-800">
+                  未登录
+                </Text>
+                <Text className="text-base text-blue-500">
+                  点击登录
+                </Text>
+              </View>
+              <Text className="text-blue-500 text-xl">→</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Content */}
@@ -190,9 +208,9 @@ export const ProfileScreen = () => {
             ) : (
               <TouchableOpacity
                 className="items-center rounded-2xl bg-blue-500 p-4 shadow-md"
-                onPress={() => navigation.navigate('Register')}
+                onPress={() => navigation.navigate('Login')}
               >
-                <Text className="text-base font-semibold text-white">立即注册</Text>
+                <Text className="text-base font-semibold text-white">立即登录</Text>
               </TouchableOpacity>
             )}
           </View>

@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { useUser } from '../contexts/UserContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -11,7 +10,6 @@ const { width } = Dimensions.get('window');
 
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
-  const { user, isAuthenticated } = useUser();
 
   const navigationItems = [
     {
@@ -69,28 +67,7 @@ export const HomeScreen = () => {
           <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-blue-500 shadow-lg">
             <Text className="text-3xl">📱</Text>
           </View>
-          <Text className="mb-4 text-center text-4xl font-bold text-gray-800">库集成演示</Text>
-
-          {/* User Welcome */}
-          {isAuthenticated ? (
-            <View className="mb-6 rounded-2xl bg-green-50 p-4">
-              <Text className="text-center text-lg font-semibold text-green-800">
-                欢迎回来，{user?.username}! 👋
-              </Text>
-              <Text className="text-center text-sm text-green-600">
-                状态: {user?.status} | 角色: {user?.roles.join(', ')}
-              </Text>
-            </View>
-          ) : (
-            <View className="mb-6 rounded-2xl bg-blue-50 p-4">
-              <Text className="text-center text-lg font-semibold text-blue-800">
-                欢迎使用演示应用! 🎉
-              </Text>
-              <Text className="text-center text-sm text-blue-600">
-                请前往个人中心注册账户以获得完整体验
-              </Text>
-            </View>
-          )}
+          <Text className="mb-8 text-center text-4xl font-bold text-gray-800">库集成演示</Text>
 
           <Text className="mb-8 text-center text-lg text-gray-600">
             探索现代 React Native 开发的最佳实践

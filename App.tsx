@@ -12,6 +12,8 @@ import { LibraryDemoScreen } from './screens/LibraryDemoScreen';
 import { TabBarDemoScreen } from './screens/TabBarDemoScreen';
 import { RootStackParamList } from './types/navigation';
 import { RegisterScreen } from './screens/RegisterScreen';
+import { LoginScreen } from './screens/LoginScreen';
+import { CreateBuildingScreen } from './screens/CreateBuildingScreen';
 import { UserProvider } from './contexts/UserContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -62,6 +64,16 @@ export default function App() {
               name="Register"
               component={RegisterScreen}
               options={{ title: '用户注册' }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ title: '用户登录' }}
+            />
+            <Stack.Screen
+              name="CreateBuilding"
+              component={CreateBuildingScreen}
+              options={{ title: '创建楼宇' }}
             />
           </Stack.Navigator>
           <StatusBar style="auto" />

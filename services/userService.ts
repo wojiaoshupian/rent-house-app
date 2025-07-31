@@ -58,8 +58,23 @@ class UserService {
 
   // 用户登录
   login(data: LoginRequest): Observable<LoginResponse> {
-    return apiService.post<LoginResponse>(`${this.baseUrl}/auth/login`, data).pipe(
-      map((response) => response.data),
+    return apiService.post<User>(`${this.baseUrl}/auth/login`, data).pipe(
+      map((response) => {
+        console.log('登录成功:', response);
+
+        // 自动保存 token
+        if (response.token) {
+          TokenManager.setToken(response.token);
+        }
+
+        // 构造 LoginResponse 格式
+        const loginResponse: LoginResponse = {
+          token: response.token || '',
+          user: response.data
+        };
+
+        return loginResponse;
+      }),
       catchError((error) => {
         console.error('登录失败:', error);
         throw error;

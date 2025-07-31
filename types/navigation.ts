@@ -9,6 +9,8 @@ export type RootStackParamList = {
   LibraryDemo: undefined;
   TabBarDemo: undefined;
   Register: undefined;
+  Login: undefined;
+  CreateBuilding: undefined;
 };
 
 export type RootNavigatorParamList = RootStackParamList;
