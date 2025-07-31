@@ -84,51 +84,35 @@ export const LibraryScreen = () => {
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="bg-white px-6 py-6 shadow-sm">
-          <Text className="text-3xl font-bold text-gray-800 mb-2">
-            库集成演示 📚
-          </Text>
-          <Text className="text-gray-500 text-base">
-            探索各种库的使用方法和最佳实践
-          </Text>
+          <Text className="mb-2 text-3xl font-bold text-gray-800">库集成演示 📚</Text>
+          <Text className="text-base text-gray-500">探索各种库的使用方法和最佳实践</Text>
         </View>
 
         {/* Content */}
         <View className="p-5">
           {/* Library Items */}
           <View className="mb-6">
-            <Text className="text-xl font-bold text-gray-800 mb-4">
-              库演示
-            </Text>
+            <Text className="mb-4 text-xl font-bold text-gray-800">库演示</Text>
             <View className="gap-3">
               {libraryItems.map((item) => (
                 <TouchableOpacity
                   key={item.id}
-                  className="bg-white rounded-2xl p-5 shadow-md"
-                  onPress={() => navigation.navigate(item.route)}
-                >
+                  className="rounded-2xl bg-white p-5 shadow-md"
+                  onPress={() => navigation.navigate(item.route)}>
                   <View className="flex-row items-center">
-                    <View 
-                      className="w-14 h-14 rounded-full items-center justify-center mr-4"
-                      style={{ backgroundColor: item.color + '20' }}
-                    >
+                    <View
+                      className="mr-4 h-14 w-14 items-center justify-center rounded-full"
+                      style={{ backgroundColor: item.color + '20' }}>
                       <Text className="text-2xl">{item.icon}</Text>
                     </View>
                     <View className="flex-1">
-                      <Text className="text-lg font-semibold text-gray-800 mb-1">
-                        {item.title}
-                      </Text>
-                      <Text className="text-sm text-gray-500 mb-2">
-                        {item.description}
-                      </Text>
+                      <Text className="mb-1 text-lg font-semibold text-gray-800">{item.title}</Text>
+                      <Text className="mb-2 text-sm text-gray-500">{item.description}</Text>
                       <View className="flex-row items-center">
-                        <View 
-                          className="px-2 py-1 rounded-xl"
-                          style={{ backgroundColor: item.color + '20' }}
-                        >
-                          <Text 
-                            className="text-xs font-medium"
-                            style={{ color: item.color }}
-                          >
+                        <View
+                          className="rounded-xl px-2 py-1"
+                          style={{ backgroundColor: item.color + '20' }}>
+                          <Text className="text-xs font-medium" style={{ color: item.color }}>
                             查看演示
                           </Text>
                         </View>
@@ -143,22 +127,20 @@ export const LibraryScreen = () => {
 
           {/* Features */}
           <View className="mb-6">
-            <Text className="text-xl font-bold text-gray-800 mb-4">
-              主要功能
-            </Text>
-            <View className="bg-white rounded-2xl p-5 shadow-md">
+            <Text className="mb-4 text-xl font-bold text-gray-800">主要功能</Text>
+            <View className="rounded-2xl bg-white p-5 shadow-md">
               {features.map((feature, index) => (
-                <View key={feature.id} className={`flex-row items-start ${index === features.length - 1 ? '' : 'mb-4'}`}>
-                  <View className="w-10 h-10 bg-blue-100 rounded-full items-center justify-center mr-3">
+                <View
+                  key={feature.id}
+                  className={`flex-row items-start ${index === features.length - 1 ? '' : 'mb-4'}`}>
+                  <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
                     <Text className="text-lg">{feature.icon}</Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-gray-800 mb-1">
+                    <Text className="mb-1 text-base font-semibold text-gray-800">
                       {feature.title}
                     </Text>
-                    <Text className="text-sm text-gray-500 leading-5">
-                      {feature.description}
-                    </Text>
+                    <Text className="text-sm leading-5 text-gray-500">{feature.description}</Text>
                   </View>
                 </View>
               ))}
@@ -166,10 +148,8 @@ export const LibraryScreen = () => {
           </View>
 
           {/* Stats */}
-          <View className="bg-white rounded-2xl p-5 shadow-md">
-            <Text className="text-xl font-bold text-gray-800 mb-4">
-              技术栈
-            </Text>
+          <View className="rounded-2xl bg-white p-5 shadow-md">
+            <Text className="mb-4 text-xl font-bold text-gray-800">技术栈</Text>
             <View className="flex-row justify-around">
               <View className="items-center">
                 <Text className="text-2xl font-bold text-blue-500">5</Text>
@@ -189,4 +169,4 @@ export const LibraryScreen = () => {
       </ScrollView>
     </View>
   );
-}; 
+};

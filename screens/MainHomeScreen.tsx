@@ -51,44 +51,31 @@ export const MainHomeScreen = () => {
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="bg-white px-6 py-6 shadow-sm">
-          <Text className="text-3xl font-bold text-gray-800 mb-2">
-            欢迎回来
-          </Text>
-          <Text className="text-gray-500 text-base">
-            今天想学习什么？
-          </Text>
+          <Text className="mb-2 text-3xl font-bold text-gray-800">欢迎回来</Text>
+          <Text className="text-base text-gray-500">今天想学习什么？</Text>
         </View>
 
         {/* Quick Actions */}
         <View className="p-5">
-          <Text className="text-xl font-bold text-gray-800 mb-4">
-            快速操作
-          </Text>
-          <View className="grid grid-cols-2 gap-4 mb-6">
+          <Text className="mb-4 text-xl font-bold text-gray-800">快速操作</Text>
+          <View className="mb-6 grid grid-cols-2 gap-4">
             {quickActions.map((action) => (
               <TouchableOpacity
                 key={action.id}
-                className="bg-white rounded-2xl p-4 shadow-sm"
-                onPress={action.onPress}
-              >
-                <View className="w-12 h-12 bg-blue-100 rounded-xl items-center justify-center mb-3">
+                className="rounded-2xl bg-white p-4 shadow-sm"
+                onPress={action.onPress}>
+                <View className="mb-3 h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
                   <Text className="text-2xl">{action.icon}</Text>
                 </View>
-                <Text className="text-base font-semibold text-gray-800 mb-1">
-                  {action.title}
-                </Text>
-                <Text className="text-xs text-gray-500">
-                  {action.description}
-                </Text>
+                <Text className="mb-1 text-base font-semibold text-gray-800">{action.title}</Text>
+                <Text className="text-xs text-gray-500">{action.description}</Text>
               </TouchableOpacity>
             ))}
           </View>
 
           {/* Stats */}
-          <View className="bg-white rounded-2xl p-5 shadow-sm mb-6">
-            <Text className="text-lg font-bold text-gray-800 mb-4">
-              学习统计
-            </Text>
+          <View className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+            <Text className="mb-4 text-lg font-bold text-gray-800">学习统计</Text>
             <View className="flex-row justify-between">
               <View className="items-center">
                 <Text className="text-2xl font-bold text-blue-500">12</Text>
@@ -106,26 +93,19 @@ export const MainHomeScreen = () => {
           </View>
 
           {/* Recent Activity */}
-          <View className="bg-white rounded-2xl p-5 shadow-sm">
-            <Text className="text-lg font-bold text-gray-800 mb-4">
-              最近活动
-            </Text>
+          <View className="rounded-2xl bg-white p-5 shadow-sm">
+            <Text className="mb-4 text-lg font-bold text-gray-800">最近活动</Text>
             {recentActivity.map((activity, index) => (
               <View
                 key={activity.id}
                 className={`flex-row items-center py-3 ${
                   index === recentActivity.length - 1 ? '' : 'border-b border-gray-100'
-                }`}
-              >
-                <View className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center mr-3">
-                  <Text className="text-lg">
-                    {activity.type === '学习' ? '📖' : '🔧'}
-                  </Text>
+                }`}>
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                  <Text className="text-lg">{activity.type === '学习' ? '📖' : '🔧'}</Text>
                 </View>
                 <View className="flex-1">
-                  <Text className="text-base font-medium text-gray-800">
-                    {activity.title}
-                  </Text>
+                  <Text className="text-base font-medium text-gray-800">{activity.title}</Text>
                   <Text className="text-xs text-gray-500">
                     {activity.time} • {activity.type}
                   </Text>
@@ -138,4 +118,4 @@ export const MainHomeScreen = () => {
       </ScrollView>
     </View>
   );
-}; 
+};

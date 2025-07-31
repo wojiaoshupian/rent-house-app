@@ -58,9 +58,7 @@ export const MainTabNavigator = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
-      <View className="flex-1">
-        {renderContent()}
-      </View>
+      <View className="flex-1">{renderContent()}</View>
       <SafeAreaView edges={['bottom']} className="bg-white">
         <TabBar
           tabs={tabs}
@@ -74,4 +72,4 @@ export const MainTabNavigator = () => {
       </SafeAreaView>
     </SafeAreaView>
   );
-}; 
+};

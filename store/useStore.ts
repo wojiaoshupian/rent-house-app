@@ -7,11 +7,11 @@ interface AppState {
     name: string;
     email: string;
   };
-  todos: Array<{
+  todos: {
     id: string;
     text: string;
     completed: boolean;
-  }>;
+  }[];
 }
 
 interface AppActions {
@@ -39,10 +39,9 @@ export const useStore = create<AppStore>()(
       // Actions
       increment: () => set((state) => ({ counter: state.counter + 1 })),
       decrement: () => set((state) => ({ counter: state.counter - 1 })),
-      
-      setUser: (name: string, email: string) =>
-        set({ user: { name, email } }),
-      
+
+      setUser: (name: string, email: string) => set({ user: { name, email } }),
+
       addTodo: (text: string) =>
         set((state) => ({
           todos: [
@@ -54,14 +53,14 @@ export const useStore = create<AppStore>()(
             },
           ],
         })),
-      
+
       toggleTodo: (id: string) =>
         set((state) => ({
           todos: state.todos.map((todo) =>
             todo.id === id ? { ...todo, completed: !todo.completed } : todo
           ),
         })),
-      
+
       removeTodo: (id: string) =>
         set((state) => ({
           todos: state.todos.filter((todo) => todo.id !== id),
@@ -71,4 +70,4 @@ export const useStore = create<AppStore>()(
       name: 'app-store',
     }
   )
-); 
+);

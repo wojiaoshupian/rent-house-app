@@ -47,8 +47,7 @@ export const TabBar = (props: TabBarProps) => {
         shadowOpacity: 0.1,
         shadowRadius: 3,
         elevation: 5,
-      }}
-    >
+      }}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.key;
         const iconText = tab.icon || '';
@@ -65,44 +64,41 @@ export const TabBar = (props: TabBarProps) => {
               }
             }}
             disabled={tab.disabled}
-            activeOpacity={0.7}
-          >
+            activeOpacity={0.7}>
             <View className="items-center">
               {iconText && (
                 <View className="mb-1">
-                  <Text 
+                  <Text
                     className="text-xl"
                     style={{
                       color: isActive ? activeColor : inactiveColor,
                       opacity: tab.disabled ? 0.5 : 1,
-                    }}
-                  >
+                    }}>
                     {iconText}
                   </Text>
                 </View>
               )}
-              
+
               <Text
                 className="text-sm font-medium"
                 style={{
                   color: isActive ? activeColor : inactiveColor,
                   opacity: tab.disabled ? 0.5 : 1,
-                }}
-              >
+                }}>
                 {titleText}
               </Text>
-              
+
               {showBadge && badgeNumber > 0 && (
-                <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-5 h-5 items-center justify-center">
-                  <Text className="text-white text-xs font-bold">
+                <View className="absolute -right-1 -top-1 h-5 min-w-5 items-center justify-center rounded-full bg-red-500">
+                  <Text className="text-xs font-bold text-white">
                     {badgeNumber > 99 ? '99+' : String(badgeNumber)}
                   </Text>
                 </View>
               )}
-              
+
               {isActive && (
                 <View
-                  className="absolute -bottom-1 w-8 h-1 rounded-full"
+                  className="absolute -bottom-1 h-1 w-8 rounded-full"
                   style={{
                     backgroundColor: activeColor,
                   }}
@@ -114,4 +110,4 @@ export const TabBar = (props: TabBarProps) => {
       })}
     </View>
   );
-}; 
+};

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import { useUser } from '../contexts/UserContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -10,6 +11,7 @@ const { width } = Dimensions.get('window');
 
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { user, isAuthenticated } = useUser();
 
   const navigationItems = [
     {
@@ -19,7 +21,7 @@ export const HomeScreen = () => {
       route: 'ZustandDemo' as const,
       color: '#667eea',
       icon: '⚡',
-      features: ['计数器', '用户管理', 'Todo列表']
+      features: ['计数器', '用户管理', 'Todo列表'],
     },
     {
       title: 'RxJS',
@@ -28,7 +30,7 @@ export const HomeScreen = () => {
       route: 'RxJSDemo' as const,
       color: '#f093fb',
       icon: '🔄',
-      features: ['状态管理', '防抖搜索', '定时器', '事件流']
+      features: ['状态管理', '防抖搜索', '定时器', '事件流'],
     },
     {
       title: 'Lodash',
@@ -37,7 +39,7 @@ export const HomeScreen = () => {
       route: 'LodashDemo' as const,
       color: '#4facfe',
       icon: '🛠️',
-      features: ['数组操作', '对象处理', '字符串工具', '函数式编程']
+      features: ['数组操作', '对象处理', '字符串工具', '函数式编程'],
     },
     {
       title: '综合演示',
@@ -46,7 +48,7 @@ export const HomeScreen = () => {
       route: 'LibraryDemo' as const,
       color: '#43e97b',
       icon: '🚀',
-      features: ['库集成', '数据处理', '状态同步']
+      features: ['库集成', '数据处理', '状态同步'],
     },
     {
       title: '动态 TabBar',
@@ -55,23 +57,42 @@ export const HomeScreen = () => {
       route: 'TabBarDemo' as const,
       color: '#ff6b6b',
       icon: '📱',
-      features: ['动态添加', '徽章显示', '动画效果', '禁用状态']
+      features: ['动态添加', '徽章显示', '动画效果', '禁用状态'],
     },
   ];
 
   return (
     <ScrollView className="flex-1 bg-gray-50">
-      <View className="flex-1 px-6 pt-12 pb-8">
+      <View className="flex-1 px-6 pb-8 pt-12">
         {/* Header */}
-        <View className="items-center mb-12">
-          <View className="w-20 h-20 bg-blue-500 rounded-full items-center justify-center mb-4 shadow-lg">
+        <View className="mb-12 items-center">
+          <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-blue-500 shadow-lg">
             <Text className="text-3xl">📱</Text>
           </View>
-          <Text className="text-4xl font-bold text-center mb-8 text-gray-800">
-            库集成演示
-          </Text>
-          
-          <Text className="text-lg text-center mb-8 text-gray-600">
+          <Text className="mb-4 text-center text-4xl font-bold text-gray-800">库集成演示</Text>
+
+          {/* User Welcome */}
+          {isAuthenticated ? (
+            <View className="mb-6 rounded-2xl bg-green-50 p-4">
+              <Text className="text-center text-lg font-semibold text-green-800">
+                欢迎回来，{user?.username}! 👋
+              </Text>
+              <Text className="text-center text-sm text-green-600">
+                状态: {user?.status} | 角色: {user?.roles.join(', ')}
+              </Text>
+            </View>
+          ) : (
+            <View className="mb-6 rounded-2xl bg-blue-50 p-4">
+              <Text className="text-center text-lg font-semibold text-blue-800">
+                欢迎使用演示应用! 🎉
+              </Text>
+              <Text className="text-center text-sm text-blue-600">
+                请前往个人中心注册账户以获得完整体验
+              </Text>
+            </View>
+          )}
+
+          <Text className="mb-8 text-center text-lg text-gray-600">
             探索现代 React Native 开发的最佳实践
           </Text>
         </View>
@@ -83,49 +104,39 @@ export const HomeScreen = () => {
               key={index}
               className="relative overflow-hidden rounded-2xl shadow-xl"
               onPress={() => navigation.navigate(item.route)}
-              activeOpacity={0.9}
-            >
+              activeOpacity={0.9}>
               {/* Background */}
-              <View 
+              <View
                 className="absolute inset-0"
                 style={{
                   backgroundColor: item.color,
                 }}
               />
-              
+
               {/* Content */}
-              <View className="p-6 relative z-10">
-                <View className="flex-row items-center mb-4">
-                  <View className="w-12 h-12 bg-white/20 rounded-full items-center justify-center mr-4">
+              <View className="relative z-10 p-6">
+                <View className="mb-4 flex-row items-center">
+                  <View className="mr-4 h-12 w-12 items-center justify-center rounded-full bg-white/20">
                     <Text className="text-2xl">{item.icon}</Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="text-2xl font-bold text-white mb-1">
-                      {item.title}
-                    </Text>
-                    <Text className="text-white/80 text-lg">
-                      {item.subtitle}
-                    </Text>
+                    <Text className="mb-1 text-2xl font-bold text-white">{item.title}</Text>
+                    <Text className="text-lg text-white/80">{item.subtitle}</Text>
                   </View>
-                  <View className="w-8 h-8 bg-white/20 rounded-full items-center justify-center">
-                    <Text className="text-white text-lg">→</Text>
+                  <View className="h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                    <Text className="text-lg text-white">→</Text>
                   </View>
                 </View>
-                
-                <Text className="text-white/90 text-base mb-4 leading-6">
-                  {item.description}
-                </Text>
-                
+
+                <Text className="mb-4 text-base leading-6 text-white/90">{item.description}</Text>
+
                 {/* Features */}
                 <View className="flex-row flex-wrap">
                   {item.features.map((feature, featureIndex) => (
-                    <View 
+                    <View
                       key={featureIndex}
-                      className="bg-white/20 rounded-full px-3 py-1 mr-2 mb-2"
-                    >
-                      <Text className="text-white text-sm font-medium">
-                        {feature}
-                      </Text>
+                      className="mb-2 mr-2 rounded-full bg-white/20 px-3 py-1">
+                      <Text className="text-sm font-medium text-white">{feature}</Text>
                     </View>
                   ))}
                 </View>
@@ -135,39 +146,37 @@ export const HomeScreen = () => {
         </View>
 
         {/* Stats Section */}
-        <View className="mt-12 bg-white rounded-2xl p-6 shadow-lg">
-          <Text className="text-xl font-bold text-gray-800 mb-4">
-            技术栈概览
-          </Text>
+        <View className="mt-12 rounded-2xl bg-white p-6 shadow-lg">
+          <Text className="mb-4 text-xl font-bold text-gray-800">技术栈概览</Text>
           <View className="space-y-3">
             <View className="flex-row items-center justify-between">
               <Text className="text-gray-600">状态管理</Text>
-              <View className="bg-green-100 px-3 py-1 rounded-full">
-                <Text className="text-green-800 font-medium">Zustand</Text>
+              <View className="rounded-full bg-green-100 px-3 py-1">
+                <Text className="font-medium text-green-800">Zustand</Text>
               </View>
             </View>
             <View className="flex-row items-center justify-between">
               <Text className="text-gray-600">响应式编程</Text>
-              <View className="bg-purple-100 px-3 py-1 rounded-full">
-                <Text className="text-purple-800 font-medium">RxJS</Text>
+              <View className="rounded-full bg-purple-100 px-3 py-1">
+                <Text className="font-medium text-purple-800">RxJS</Text>
               </View>
             </View>
             <View className="flex-row items-center justify-between">
               <Text className="text-gray-600">工具库</Text>
-              <View className="bg-blue-100 px-3 py-1 rounded-full">
-                <Text className="text-blue-800 font-medium">Lodash</Text>
+              <View className="rounded-full bg-blue-100 px-3 py-1">
+                <Text className="font-medium text-blue-800">Lodash</Text>
               </View>
             </View>
             <View className="flex-row items-center justify-between">
               <Text className="text-gray-600">路由导航</Text>
-              <View className="bg-orange-100 px-3 py-1 rounded-full">
-                <Text className="text-orange-800 font-medium">React Navigation</Text>
+              <View className="rounded-full bg-orange-100 px-3 py-1">
+                <Text className="font-medium text-orange-800">React Navigation</Text>
               </View>
             </View>
             <View className="flex-row items-center justify-between">
               <Text className="text-gray-600">UI组件</Text>
-              <View className="bg-red-100 px-3 py-1 rounded-full">
-                <Text className="text-red-800 font-medium">动态 TabBar</Text>
+              <View className="rounded-full bg-red-100 px-3 py-1">
+                <Text className="font-medium text-red-800">动态 TabBar</Text>
               </View>
             </View>
           </View>
@@ -175,11 +184,9 @@ export const HomeScreen = () => {
 
         {/* Footer */}
         <View className="mt-8 items-center">
-          <Text className="text-gray-500 text-center">
-            点击卡片开始探索各个库的强大功能
-          </Text>
+          <Text className="text-center text-gray-500">点击卡片开始探索各个库的强大功能</Text>
         </View>
       </View>
     </ScrollView>
   );
-}; 
+};

@@ -47,7 +47,7 @@ export const TabBarDemoScreen = () => {
 
   const removeTab = (tabKey: string) => {
     if (tabs.length > 1) {
-      setTabs(tabs.filter(tab => tab.key !== tabKey));
+      setTabs(tabs.filter((tab) => tab.key !== tabKey));
       if (activeTab === tabKey) {
         setActiveTab(tabs[0].key);
       }
@@ -59,64 +59,48 @@ export const TabBarDemoScreen = () => {
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="bg-white px-6 py-6 shadow-sm">
-          <Text className="text-3xl font-bold text-gray-800 mb-2">
-            动态 TabBar 演示
-          </Text>
-          <Text className="text-gray-500 text-base">
-            可以动态添加和删除标签页
-          </Text>
+          <Text className="mb-2 text-3xl font-bold text-gray-800">动态 TabBar 演示</Text>
+          <Text className="text-base text-gray-500">可以动态添加和删除标签页</Text>
         </View>
 
         {/* Content */}
         <View className="p-5">
-          <View className="bg-white rounded-2xl p-5 shadow-sm mb-6">
-            <Text className="text-xl font-bold text-gray-800 mb-4">
-              当前激活标签
-            </Text>
-            <View className="bg-blue-50 rounded-xl p-4">
+          <View className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+            <Text className="mb-4 text-xl font-bold text-gray-800">当前激活标签</Text>
+            <View className="rounded-xl bg-blue-50 p-4">
               <Text className="text-lg font-semibold text-blue-800">
-                {tabs.find(tab => tab.key === activeTab)?.title || '未知'}
+                {tabs.find((tab) => tab.key === activeTab)?.title || '未知'}
               </Text>
-              <Text className="text-sm text-blue-600">
-                标签键: {activeTab}
-              </Text>
+              <Text className="text-sm text-blue-600">标签键: {activeTab}</Text>
             </View>
           </View>
 
           {/* Tab Management */}
-          <View className="bg-white rounded-2xl p-5 shadow-sm mb-6">
-            <Text className="text-lg font-bold text-gray-800 mb-4">
-              标签管理
-            </Text>
+          <View className="mb-6 rounded-2xl bg-white p-5 shadow-sm">
+            <Text className="mb-4 text-lg font-bold text-gray-800">标签管理</Text>
             <View className="space-y-3">
               <TouchableOpacity
-                className="bg-green-500 rounded-xl py-3 px-4 items-center"
-                onPress={addTab}
-              >
-                <Text className="text-white text-base font-semibold">
-                  添加新标签
-                </Text>
+                className="items-center rounded-xl bg-green-500 px-4 py-3"
+                onPress={addTab}>
+                <Text className="text-base font-semibold text-white">添加新标签</Text>
               </TouchableOpacity>
-              
+
               {tabs.map((tab) => (
-                <View key={tab.key} className="flex-row items-center justify-between bg-gray-50 rounded-xl p-3">
+                <View
+                  key={tab.key}
+                  className="flex-row items-center justify-between rounded-xl bg-gray-50 p-3">
                   <View className="flex-row items-center">
-                    <Text className="text-lg mr-2">{tab.icon}</Text>
+                    <Text className="mr-2 text-lg">{tab.icon}</Text>
                     <View>
-                      <Text className="text-base font-medium text-gray-800">
-                        {tab.title}
-                      </Text>
-                      <Text className="text-xs text-gray-500">
-                        徽章: {tab.badge}
-                      </Text>
+                      <Text className="text-base font-medium text-gray-800">{tab.title}</Text>
+                      <Text className="text-xs text-gray-500">徽章: {tab.badge}</Text>
                     </View>
                   </View>
                   {tabs.length > 1 && (
                     <TouchableOpacity
-                      className="bg-red-500 rounded-lg px-3 py-1"
-                      onPress={() => removeTab(tab.key)}
-                    >
-                      <Text className="text-white text-sm">删除</Text>
+                      className="rounded-lg bg-red-500 px-3 py-1"
+                      onPress={() => removeTab(tab.key)}>
+                      <Text className="text-sm text-white">删除</Text>
                     </TouchableOpacity>
                   )}
                 </View>
@@ -125,11 +109,9 @@ export const TabBarDemoScreen = () => {
           </View>
 
           {/* TabBar Preview */}
-          <View className="bg-white rounded-2xl p-5 shadow-sm">
-            <Text className="text-lg font-bold text-gray-800 mb-4">
-              TabBar 预览
-            </Text>
-            <View className="border border-gray-200 rounded-xl overflow-hidden">
+          <View className="rounded-2xl bg-white p-5 shadow-sm">
+            <Text className="mb-4 text-lg font-bold text-gray-800">TabBar 预览</Text>
+            <View className="overflow-hidden rounded-xl border border-gray-200">
               <TabBar
                 tabs={tabs}
                 activeTab={activeTab}
@@ -145,4 +127,4 @@ export const TabBarDemoScreen = () => {
       </ScrollView>
     </View>
   );
-}; 
+};

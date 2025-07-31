@@ -11,4 +11,4 @@ export type RootStackParamList = {
   Register: undefined;
 };
 
-export type RootNavigatorParamList = RootStackParamList; 
+export type RootNavigatorParamList = RootStackParamList;
