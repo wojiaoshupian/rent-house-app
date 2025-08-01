@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TabBar, TabItem } from './TabBar';
-import { MainHomeScreen } from '../screens/MainHomeScreen';
-import { UsageScreen } from '../screens/UsageScreen';
-import { LibraryScreen } from '../screens/LibraryScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import { MainHomeScreen } from '../../screens/MainHome';
+import { UsageScreen } from '../../screens/Usage';
+import { LibraryScreen } from '../../screens/Library';
+import { ProfileScreen } from '../../screens/Profile';
 
 export const MainTabNavigator = () => {
   const [activeTab, setActiveTab] = useState('home');

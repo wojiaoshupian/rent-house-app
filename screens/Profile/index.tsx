@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
-import { useUser } from '../contexts/UserContext';
+import { RootStackParamList } from '../../types/navigation';
+import { useUser } from '../../contexts/UserContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 

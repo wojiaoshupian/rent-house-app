@@ -5,6 +5,7 @@ export type RootStackParamList = {
   Home: undefined;
   ZustandDemo: undefined;
   RxJSDemo: undefined;
+  SubjectDemo: undefined;
   LodashDemo: undefined;
   LibraryDemo: undefined;
   TabBarDemo: undefined;

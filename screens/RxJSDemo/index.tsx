@@ -6,7 +6,7 @@ import {
   searchService,
   timerService,
   eventService,
-} from '../services/rxjsService';
+} from '../../services/rxjsService';
 import { Subscription } from 'rxjs';
 
 export const RxJSDemoScreen = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
-import { useStore } from '../store/useStore';
+import { useStore } from '../../store/useStore';
 
 export const ZustandDemoScreen = () => {
   const { counter, user, todos, increment, decrement, setUser, addTodo, toggleTodo, removeTodo } =

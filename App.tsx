@@ -4,16 +4,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { MainTabNavigator } from './components/MainTabNavigator';
-import { ZustandDemoScreen } from './screens/ZustandDemoScreen';
-import { RxJSDemoScreen } from './screens/RxJSDemoScreen';
-import { LodashDemoScreen } from './screens/LodashDemoScreen';
-import { LibraryDemoScreen } from './screens/LibraryDemoScreen';
-import { TabBarDemoScreen } from './screens/TabBarDemoScreen';
+import { MainTabNavigator } from './components';
+import { ZustandDemoScreen } from './screens/ZustandDemo';
+import { RxJSDemoScreen } from './screens/RxJSDemo';
+import { SubjectDemoScreen } from './screens/SubjectDemo';
+import { LodashDemoScreen } from './screens/LodashDemo';
+import { LibraryDemoScreen } from './screens/LibraryDemo';
+import { TabBarDemoScreen } from './screens/TabBarDemo';
 import { RootStackParamList } from './types/navigation';
-import { RegisterScreen } from './screens/RegisterScreen';
-import { LoginScreen } from './screens/LoginScreen';
-import { CreateBuildingScreen } from './screens/CreateBuildingScreen';
+import { RegisterScreen } from './screens/Register';
+import { LoginScreen } from './screens/Login';
+import { CreateBuildingScreen } from './screens/CreateBuilding';
 import { UserProvider } from './contexts/UserContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,6 +45,11 @@ export default function App() {
               name="RxJSDemo"
               component={RxJSDemoScreen}
               options={{ title: 'RxJS 响应式编程' }}
+            />
+            <Stack.Screen
+              name="SubjectDemo"
+              component={SubjectDemoScreen}
+              options={{ title: 'RxJS Subject 演示' }}
             />
             <Stack.Screen
               name="LodashDemo"

@@ -7,7 +7,7 @@ import {
   numberUtils,
   functionUtils,
   collectionUtils,
-} from '../utils/lodashUtils';
+} from '../../utils/lodashUtils';
 
 export const LodashDemoScreen = () => {
   const [inputText, setInputText] = useState('');

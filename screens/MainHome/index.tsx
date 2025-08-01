@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../types/navigation';
+import { RootStackParamList } from '../../types/navigation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -42,6 +42,14 @@ export const MainHomeScreen = () => {
       icon: '💰',
       color: '#EF4444',
       route: 'Home' as const, // 暂时跳转到Home，后续可以添加收费管理页面
+    },
+    {
+      id: 5,
+      title: 'RxJS Subject',
+      description: 'Subject 演示和学习',
+      icon: '🔄',
+      color: '#8B5CF6',
+      route: 'SubjectDemo' as const,
     },
   ];
 

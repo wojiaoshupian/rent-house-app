@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput, ScrollView, Alert } from 'react-native';
-import { useStore } from '../store/useStore';
-import { fetchData, searchService, timerService } from '../services/rxjsService';
-import { arrayUtils, objectUtils, stringUtils, numberUtils } from '../utils/lodashUtils';
+import { useStore } from '../../store/useStore';
+import { fetchData, searchService, timerService } from '../../services/rxjsService';
+import { arrayUtils, objectUtils, stringUtils, numberUtils } from '../../utils/lodashUtils';
 import { Subscription } from 'rxjs';
 
 export const LibraryDemoScreen = () => {

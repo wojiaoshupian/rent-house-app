@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { TabBar, TabItem } from '../components/TabBar';
+import { TabBar, TabItem } from '../../components';
 
 export const TabBarDemoScreen = () => {
   const [activeTab, setActiveTab] = useState<string>('home');
