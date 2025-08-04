@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, switchMap } from 'rxjs/operators';
 import { apiService } from './apiService';
 import TokenManager from 'utils/tokenManager';
 
@@ -31,6 +31,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
+  tokenExpiresAt?: string; // 后端返回的token过期时间
   user: User;
 }
 
@@ -44,11 +45,12 @@ class UserService {
       map((response) =>{
         console.log('注册成功:', response);
         if (response.token) {
-          TokenManager.setToken(response.token);
+          // 使用后端返回的过期时间
+          TokenManager.setTokenWithBackendExpiry(response.token, response.tokenExpiresAt);
         }
         return response.data;
       } ),
-     
+
       catchError((error) => {
         console.error('注册失败:', error);
         throw error;
@@ -59,17 +61,19 @@ class UserService {
   // 用户登录
   login(data: LoginRequest): Observable<LoginResponse> {
     return apiService.post<User>(`${this.baseUrl}/auth/login`, data).pipe(
-      map((response) => {
+      switchMap(async (response: any) => {
         console.log('登录成功:', response);
 
-        // 自动保存 token
+        // 自动保存 token，使用后端返回的过期时间
         if (response.token) {
-          TokenManager.setToken(response.token);
+          await TokenManager.setTokenWithBackendExpiry(response.token, response.tokenExpiresAt);
+          console.log('🔑 Token已保存，状态监听器将自动更新');
         }
 
         // 构造 LoginResponse 格式
         const loginResponse: LoginResponse = {
           token: response.token || '',
+          tokenExpiresAt: response.tokenExpiresAt,
           user: response.data
         };
 
@@ -147,6 +151,49 @@ class UserService {
       map((response) => response.data.count),
       catchError((error) => {
         console.error('统计活跃用户失败:', error);
+        throw error;
+      })
+    );
+  }
+
+  // 刷新Token（自动登录）
+  refreshToken(): Observable<LoginResponse> {
+    return apiService.post<User>(`${this.baseUrl}/auth/refresh`).pipe(
+      map((response) => {
+        console.log('🔄 Token刷新成功:', response);
+
+        // 自动保存新的token，使用后端返回的过期时间
+        if (response.token) {
+          TokenManager.setTokenWithBackendExpiry(response.token, response.tokenExpiresAt);
+        }
+
+        // 构造 LoginResponse 格式
+        const loginResponse: LoginResponse = {
+          token: response.token || '',
+          tokenExpiresAt: response.tokenExpiresAt,
+          user: response.data
+        };
+
+        return loginResponse;
+      }),
+      catchError((error) => {
+        console.error('❌ Token刷新失败:', error);
+        // Token刷新失败，清除本地token
+        TokenManager.forceLogout();
+        throw error;
+      })
+    );
+  }
+
+  // 获取当前用户信息（需要认证）
+  getCurrentUser(): Observable<User> {
+    return apiService.get<User>(`${this.baseUrl}/auth/me`).pipe(
+      map((response) => {
+        console.log('✅ 获取当前用户信息成功:', response.data);
+        return response.data;
+      }),
+      catchError((error) => {
+        console.error('❌ 获取当前用户信息失败:', error);
         throw error;
       })
     );

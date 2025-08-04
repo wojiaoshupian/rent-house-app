@@ -1,8 +1,11 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/navigation';
+import { buildingService } from '../../services/buildingService';
+import { Building } from '../../types/building';
+import { catchError, of } from 'rxjs';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -10,6 +13,46 @@ const { width } = Dimensions.get('window');
 
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+
+  // 楼宇列表状态
+  const [buildings, setBuildings] = useState<Building[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // 获取楼宇列表
+  const fetchBuildings = () => {
+    setLoading(true);
+    setError(null);
+
+    buildingService.getBuildingList()
+      .pipe(
+        catchError((error) => {
+          console.error('获取楼宇列表失败:', error);
+          const errorMessage = error.message || '获取楼宇列表失败，请重试';
+          setError(errorMessage);
+          Alert.alert('获取失败', errorMessage);
+          return of([]);
+        })
+      )
+      .subscribe({
+        next: (buildingList) => {
+          setBuildings(buildingList);
+          setLoading(false);
+          console.log('✅ 成功获取楼宇列表:', buildingList);
+        },
+        error: (error) => {
+          console.error('RxJS错误:', error);
+          setLoading(false);
+          setError('网络请求失败，请检查网络连接');
+          Alert.alert('错误', '网络请求失败，请检查网络连接');
+        }
+      });
+  };
+
+  // 组件挂载时获取楼宇列表
+  useEffect(() => {
+    fetchBuildings();
+  }, []);
 
   const navigationItems = [
     {
@@ -122,8 +165,99 @@ export const HomeScreen = () => {
           ))}
         </View>
 
-        {/* Stats Section */}
+        {/* 楼宇列表区域 */}
         <View className="mt-12 rounded-2xl bg-white p-6 shadow-lg">
+          <View className="flex-row items-center justify-between mb-4">
+            <Text className="text-xl font-bold text-gray-800">楼宇列表</Text>
+            <View className="flex-row space-x-2">
+              <TouchableOpacity
+                onPress={() => navigation.navigate('BuildingList')}
+                className="px-3 py-1 rounded-full bg-green-500"
+              >
+                <Text className="text-sm font-medium text-white">查看全部</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={fetchBuildings}
+                disabled={loading}
+                className={`px-3 py-1 rounded-full ${loading ? 'bg-gray-300' : 'bg-blue-500'}`}
+              >
+                <Text className={`text-sm font-medium ${loading ? 'text-gray-500' : 'text-white'}`}>
+                  {loading ? '加载中...' : '刷新'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* 加载状态 */}
+          {loading && (
+            <View className="flex-row items-center justify-center py-8">
+              <ActivityIndicator size="large" color="#3b82f6" />
+              <Text className="ml-2 text-gray-600">正在获取楼宇列表...</Text>
+            </View>
+          )}
+
+          {/* 错误状态 */}
+          {error && !loading && (
+            <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <Text className="text-red-800 font-medium mb-2">获取失败</Text>
+              <Text className="text-red-600 text-sm mb-3">{error}</Text>
+              <TouchableOpacity
+                onPress={fetchBuildings}
+                className="bg-red-500 px-4 py-2 rounded-lg self-start"
+              >
+                <Text className="text-white text-sm font-medium">重试</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* 楼宇列表 */}
+          {!loading && !error && buildings.length > 0 && (
+            <View className="space-y-3">
+              {buildings.map((building, index) => (
+                <View key={building.id || index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-lg font-semibold text-gray-800">{building.buildingName}</Text>
+                    <View className="bg-green-100 px-2 py-1 rounded-full">
+                      <Text className="text-green-800 text-xs font-medium">ID: {building.id}</Text>
+                    </View>
+                  </View>
+
+                  <View className="space-y-1">
+                    <Text className="text-gray-600">房东: {building.landlordName}</Text>
+                    <View className="flex-row space-x-4">
+                      <Text className="text-gray-600">电费: ¥{building.electricityUnitPrice}/度</Text>
+                      <Text className="text-gray-600">水费: ¥{building.waterUnitPrice}/吨</Text>
+                    </View>
+                    {building.hotWaterUnitPrice && (
+                      <Text className="text-gray-600">热水: ¥{building.hotWaterUnitPrice}/吨</Text>
+                    )}
+                    <Text className="text-gray-500 text-sm">
+                      收租方式: {building.rentCollectionMethod === 'FIXED_MONTH_START' ? '固定月初' : '其他'}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* 空状态 */}
+          {!loading && !error && buildings.length === 0 && (
+            <View className="py-8 items-center">
+              <Text className="text-6xl mb-4">🏢</Text>
+              <Text className="text-gray-600 text-lg font-medium mb-2">暂无楼宇数据</Text>
+              <Text className="text-gray-500 text-sm mb-4">点击下方按钮创建第一个楼宇</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('CreateBuilding')}
+                className="bg-blue-500 px-6 py-3 rounded-lg"
+              >
+                <Text className="text-white font-medium">创建楼宇</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        {/* Stats Section */}
+        <View className="mt-8 rounded-2xl bg-white p-6 shadow-lg">
           <Text className="mb-4 text-xl font-bold text-gray-800">技术栈概览</Text>
           <View className="space-y-3">
             <View className="flex-row items-center justify-between">

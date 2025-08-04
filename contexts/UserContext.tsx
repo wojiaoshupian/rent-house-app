@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../services/userService';
 import TokenManager from '../utils/tokenManager';
+import { AutoLoginService } from '../services/autoLoginService';
 
 // 用户上下文状态接口
 interface UserContextState {
@@ -47,13 +48,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   // 登出
   const logout = async () => {
     try {
-      // 清除本地存储的 token
-      await TokenManager.removeToken();
+      // 使用强制登出清除所有相关数据
+      await TokenManager.forceLogout();
       // 清除用户信息
       setUserState(null);
-      console.log('👋 用户已登出');
+      console.log('👋 用户已登出，所有数据已清除');
     } catch (error) {
-      console.error('登出失败:', error);
+      console.error('❌ 登出失败:', error);
     }
   };
 
@@ -80,26 +81,70 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
-  // 组件挂载时检查是否有已保存的用户信息
+  // 检查登录状态并自动清理过期token
+  const checkAuthStatus = async () => {
+    try {
+      const isLoggedIn = await TokenManager.isUserLoggedIn();
+
+      if (!isLoggedIn && user !== null) {
+        // 如果token无效但用户状态还存在，自动登出
+        console.log('🔒 检测到token已过期或无效，自动登出');
+        setUserState(null);
+        await TokenManager.forceLogout();
+      } else if (isLoggedIn && user === null) {
+        // 如果token有效但用户状态为空，可能需要重新获取用户信息
+        console.log('🔑 检测到有效token但用户信息为空，需要重新获取用户信息');
+      }
+    } catch (error) {
+      console.error('❌ 检查认证状态失败:', error);
+    }
+  };
+
+  // 组件挂载时检查是否有已保存的用户信息并尝试自动登录
   useEffect(() => {
     const initializeUser = async () => {
       try {
-        const token = await TokenManager.getToken();
-        if (token) {
-          // 如果有 token，可以在这里调用 API 获取用户信息
-          // 或者从本地存储中恢复用户信息
-          console.log('🔑 发现已保存的 token，等待用户信息加载...');
-          // 这里暂时不设置用户信息，等待登录或注册时设置
-        }
+        setIsLoading(true);
+        console.log('🚀 应用启动，开始初始化用户状态...');
+
+        // 尝试自动登录
+        AutoLoginService.attemptAutoLogin().subscribe({
+          next: (autoLoginResult) => {
+            if (autoLoginResult) {
+              console.log('✅ 自动登录成功:', autoLoginResult.user.username);
+              setUserState(autoLoginResult.user);
+            } else {
+              console.log('ℹ️ 未执行自动登录，用户需要手动登录');
+              setUserState(null);
+            }
+          },
+          error: (error) => {
+            console.error('❌ 自动登录失败:', error);
+            setUserState(null);
+            // 自动登录失败，清理可能无效的Token
+            TokenManager.forceLogout();
+          },
+          complete: () => {
+            setIsLoading(false);
+            console.log('🏁 用户初始化完成');
+          }
+        });
       } catch (error) {
-        console.error('初始化用户信息失败:', error);
-      } finally {
+        console.error('❌ 初始化用户信息失败:', error);
+        setUserState(null);
         setIsLoading(false);
       }
     };
 
     initializeUser();
   }, []);
+
+  // 定期检查登录状态（每5分钟检查一次）
+  useEffect(() => {
+    const interval = setInterval(checkAuthStatus, 5 * 60 * 1000); // 5分钟
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   const contextValue: UserContextState = {
     user,

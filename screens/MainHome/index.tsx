@@ -22,13 +22,21 @@ export const MainHomeScreen = () => {
     {
       id: 2,
       title: '楼宇管理',
-      description: '查看和管理楼宇',
+      description: '查看楼宇列表和详情',
       icon: '🏘️',
       color: '#10B981',
-      route: 'Home' as const, // 暂时跳转到Home，后续可以添加楼宇列表页面
+      route: 'BuildingList' as const, // 跳转到楼宇列表页面
     },
     {
       id: 3,
+      title: '房间管理',
+      description: '管理房间信息',
+      icon: '🏠',
+      color: '#8B5CF6',
+      route: 'RoomList' as const,
+    },
+    {
+      id: 4,
       title: '租户管理',
       description: '管理租户信息',
       icon: '👥',
@@ -36,7 +44,15 @@ export const MainHomeScreen = () => {
       route: 'Home' as const, // 暂时跳转到Home，后续可以添加租户管理页面
     },
     {
-      id: 4,
+      id: 5,
+      title: '抄水电表',
+      description: '管理房间水电表记录',
+      icon: '📊',
+      color: '#06B6D4',
+      route: 'UtilityReadingList' as const,
+    },
+    {
+      id: 6,
       title: '收费管理',
       description: '水电费收费管理',
       icon: '💰',
@@ -44,7 +60,7 @@ export const MainHomeScreen = () => {
       route: 'Home' as const, // 暂时跳转到Home，后续可以添加收费管理页面
     },
     {
-      id: 5,
+      id: 7,
       title: 'RxJS Subject',
       description: 'Subject 演示和学习',
       icon: '🔄',
@@ -76,7 +92,15 @@ export const MainHomeScreen = () => {
               <TouchableOpacity
                 key={action.id}
                 className="flex-1 min-w-[45%] bg-white rounded-xl p-4 shadow-sm"
-                onPress={() => navigation.navigate(action.route)}
+                onPress={() => {
+                  if (action.route === 'RoomList') {
+                    navigation.navigate('RoomList', {});
+                  } else if (action.route === 'UtilityReadingList') {
+                    navigation.navigate('UtilityReadingList', {});
+                  } else {
+                    navigation.navigate(action.route as any);
+                  }
+                }}
               >
                 <View className="items-center">
                   <View

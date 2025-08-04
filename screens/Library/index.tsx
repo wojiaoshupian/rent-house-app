@@ -98,7 +98,7 @@ export const LibraryScreen = () => {
                 <TouchableOpacity
                   key={item.id}
                   className="rounded-2xl bg-white p-5 shadow-md"
-                  onPress={() => navigation.navigate(item.route)}>
+                  onPress={() => navigation.navigate(item.route as any)}>
                   <View className="flex-row items-center">
                     <View
                       className="mr-4 h-14 w-14 items-center justify-center rounded-full"

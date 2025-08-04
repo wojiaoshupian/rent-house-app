@@ -12,6 +12,14 @@ export type RootStackParamList = {
   Register: undefined;
   Login: undefined;
   CreateBuilding: undefined;
+  BuildingList: undefined;
+  RoomList: { buildingId?: number };
+  CreateRoom: { buildingId?: number };
+  RoomDetail: { roomId: number };
+  CreateUtilityReading: { roomId?: number };
+  UtilityReadingList: { roomId?: number; buildingId?: number };
+  UtilityReadingDetail: { readingId: number };
+  EditUtilityReading: { readingId: number };
 };
 
 export type RootNavigatorParamList = RootStackParamList;

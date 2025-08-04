@@ -23,6 +23,7 @@ export interface ApiResponse<T = any> {
   message?: string;
   success: boolean;
   token?: string;
+  tokenExpiresAt?: string; // 后端返回的token过期时间
 }
 
 // 错误响应接口
@@ -41,15 +42,44 @@ class ApiService {
     this.setupInterceptors();
   }
 
+  // 检查接口是否需要认证
+  private requiresAuthentication(url: string): boolean {
+    // 不需要认证的接口列表
+    const publicEndpoints = [
+      '/api/auth/login',
+      '/api/auth/register',
+      '/api/auth/refresh',
+      '/api/public'
+    ];
+
+    // 检查是否是公开接口
+    return !publicEndpoints.some(endpoint => url.includes(endpoint));
+  }
+
   // 设置拦截器
   private setupInterceptors() {
     // 请求拦截器
     this.axiosInstance.interceptors.request.use(
       async (config: InternalAxiosRequestConfig) => {
-        // 自动添加 token
-        const token = await TokenManager.getToken();
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
+        // 检查是否需要认证的接口
+        const requiresAuth = this.requiresAuthentication(config.url || '');
+
+        if (requiresAuth) {
+          // 检查用户是否已登录
+          const isLoggedIn = await TokenManager.isUserLoggedIn();
+          if (!isLoggedIn) {
+            console.error('🚫 用户未登录，拒绝请求:', config.url);
+            throw new Error('用户未登录，请先登录后再试');
+          }
+
+          // 自动添加 token
+          const token = await TokenManager.getToken();
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          } else {
+            console.error('🚫 未找到有效Token，拒绝请求:', config.url);
+            throw new Error('认证失败，请重新登录');
+          }
         }
 
         console.log('🚀 API Request:', config.method?.toUpperCase(), config.url);
@@ -68,12 +98,25 @@ class ApiService {
         return response;
       },
       async (error: any) => {
-        if (error.response?.status === 401) {
+        const status = error.response?.status;
+        const url = error.config?.url;
+
+        if (status === 401) {
           // token 过期或无效，清除本地 token
-          await TokenManager.removeToken();
-          console.log('🔑 Token 已过期，已清除本地存储');
+          await TokenManager.forceLogout();
+          console.log('🔑 Token 已过期，已强制登出');
+
+          // 修改错误信息，让用户知道需要重新登录
+          error.message = '登录已过期，请重新登录';
+        } else if (status === 403) {
+          // 权限不足
+          error.message = '权限不足，无法执行此操作';
+        } else if (status >= 500) {
+          // 服务器错误
+          error.message = '服务器错误，请稍后重试';
         }
-        console.error('❌ Response Error:', error.response?.status, error.message);
+
+        console.error('❌ Response Error:', status, url, error.message);
         return Promise.reject(error);
       }
     );
@@ -89,15 +132,43 @@ class ApiService {
           message: response.data.message || '请求成功',
           success: true,
           token: response.data.token,
+          tokenExpiresAt: response.data.tokenExpiresAt, // 传递后端返回的过期时间
         };
       }),
       catchError((error) => {
+        // 详细记录原始错误信息
+        console.error('❌ 原始错误对象:', error);
+        console.error('❌ error.response:', error.response);
+        console.error('❌ error.response?.data:', error.response?.data);
+        console.error('❌ error.message:', error.message);
+
+        // 优先使用接口返回的具体错误信息
+        let errorMessage = '网络请求失败';
+
+        if (error.response?.data?.message) {
+          // 接口返回的具体错误信息（最高优先级）
+          errorMessage = error.response.data.message;
+          console.log('💡 使用接口返回的错误信息:', errorMessage);
+        } else if (error.message && error.message !== `Request failed with status code ${error.response?.status}`) {
+          // axios的错误信息（排除通用的状态码错误信息）
+          errorMessage = error.message;
+          console.log('💡 使用axios错误信息:', errorMessage);
+        }
+
         const apiError: ApiError = {
-          message: error.response?.data?.message || error.message || '网络请求失败',
+          message: errorMessage,
           status: error.response?.status,
           code: error.code,
         };
-        console.error('❌ API Error:', apiError);
+
+        // 保留原始响应数据以便调试
+        if (error.response?.data) {
+          (apiError as any).response = {
+            data: error.response.data
+          };
+        }
+
+        console.error('❌ 处理后的 API Error:', apiError);
         throw apiError;
       })
     );
@@ -131,6 +202,11 @@ class ApiService {
   // 添加 token 管理方法
   setToken(token: string): Promise<void> {
     return TokenManager.setToken(token);
+  }
+
+  // 设置token（使用后端过期时间）
+  setTokenWithBackendExpiry(token: string, tokenExpiresAt?: string): Promise<void> {
+    return TokenManager.setTokenWithBackendExpiry(token, tokenExpiresAt);
   }
 
   getToken(): Promise<string | null> {

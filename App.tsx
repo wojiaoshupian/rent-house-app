@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { MainTabNavigator } from './components';
+import { MainTabNavigator, TokenStatusMonitor } from './components';
 import { ZustandDemoScreen } from './screens/ZustandDemo';
 import { RxJSDemoScreen } from './screens/RxJSDemo';
 import { SubjectDemoScreen } from './screens/SubjectDemo';
@@ -15,7 +15,31 @@ import { RootStackParamList } from './types/navigation';
 import { RegisterScreen } from './screens/Register';
 import { LoginScreen } from './screens/Login';
 import { CreateBuildingScreen } from './screens/CreateBuilding';
+import { BuildingListScreen } from './screens/BuildingList';
+import RoomListScreen from './screens/RoomList';
+import CreateRoomScreen from './screens/CreateRoom';
+import RoomDetailScreen from './screens/RoomDetail';
+import CreateUtilityReadingScreen from './screens/CreateUtilityReading';
+import UtilityReadingListScreen from './screens/UtilityReadingList';
+import UtilityReadingDetailScreen from './screens/UtilityReadingDetail';
+import EditUtilityReadingScreen from './screens/EditUtilityReading';
 import { UserProvider } from './contexts/UserContext';
+
+// 导入测试工具（开发环境）
+if (__DEV__) {
+  import('./utils/testBuildingAPI');
+  import('./utils/testTokenManager');
+  import('./utils/testBackendTokenExpiry');
+  import('./utils/authGuard');
+  import('./utils/testAuthProtection');
+  import('./utils/testBuildingRefresh');
+  import('./services/autoLoginService');
+  import('./utils/testAutoLogin');
+  import('./utils/testTokenDelay');
+  import('./utils/testRoomAPI');
+  import('./utils/testUtilityReadingAPI');
+  import('./utils/testFilterFunctionality');
+}
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -81,9 +105,52 @@ export default function App() {
               component={CreateBuildingScreen}
               options={{ title: '创建楼宇' }}
             />
+            <Stack.Screen
+              name="BuildingList"
+              component={BuildingListScreen}
+              options={{ title: '楼宇列表' }}
+            />
+            <Stack.Screen
+              name="RoomList"
+              component={RoomListScreen}
+              options={{ title: '房间列表' }}
+            />
+            <Stack.Screen
+              name="CreateRoom"
+              component={CreateRoomScreen}
+              options={{ title: '创建房间' }}
+            />
+            <Stack.Screen
+              name="RoomDetail"
+              component={RoomDetailScreen}
+              options={{ title: '房间详情' }}
+            />
+            <Stack.Screen
+              name="CreateUtilityReading"
+              component={CreateUtilityReadingScreen}
+              options={{ title: '抄水电表' }}
+            />
+            <Stack.Screen
+              name="UtilityReadingList"
+              component={UtilityReadingListScreen}
+              options={{ title: '抄表记录' }}
+            />
+            <Stack.Screen
+              name="UtilityReadingDetail"
+              component={UtilityReadingDetailScreen}
+              options={{ title: '抄表详情' }}
+            />
+            <Stack.Screen
+              name="EditUtilityReading"
+              component={EditUtilityReadingScreen}
+              options={{ title: '编辑抄表记录' }}
+            />
           </Stack.Navigator>
           <StatusBar style="auto" />
         </NavigationContainer>
+
+        {/* 开发环境Token状态监控 */}
+        <TokenStatusMonitor />
       </UserProvider>
     </SafeAreaProvider>
   );
