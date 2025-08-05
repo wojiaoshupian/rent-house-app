@@ -176,15 +176,6 @@ const BillCanvasScreen: React.FC = () => {
 
   return (
     <View className="flex-1 bg-gray-50">
-      {/* 头部 */}
-      <View className="bg-white px-4 py-3 border-b border-gray-200 flex-row justify-between items-center">
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text className="text-blue-500 text-base">← 返回</Text>
-        </TouchableOpacity>
-        <Text className="text-lg font-semibold text-gray-800">电子账单生成</Text>
-        <View className="w-12" />
-      </View>
-
       <ScrollView className="flex-1">
         {/* 账单预览 */}
         <View className="p-4">

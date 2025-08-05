@@ -187,7 +187,7 @@ export default function App() {
             <Stack.Screen
               name="BillCanvas"
               component={BillCanvasScreen}
-              options={{ headerShown: false }}
+              options={{ title: '电子账单生成' }}
             />
           </Stack.Navigator>
           <StatusBar style="auto" />
