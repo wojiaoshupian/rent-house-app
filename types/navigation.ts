@@ -25,6 +25,7 @@ export type RootStackParamList = {
   BillDetail: { billId: number };
   CreateBill: { roomId?: number };
   EditBill: { billId: number };
+  BillCanvas: { billId: number };
 
   // 预估账单相关
   EstimatedBillList: { roomId?: number; buildingId?: number };

@@ -127,6 +127,118 @@ class BillService {
   }
 
   /**
+   * 将API响应转换为BillDetail格式
+   */
+  private transformApiBillToBillDetail(apiData: any): BillDetail {
+    // 生成账单编号（如果API没有提供）
+    const billNumber = `BILL-${apiData.id}-${apiData.billMonth?.replace('-', '')}`;
+
+    // 计算总金额
+    const totalAmount = apiData.totalAmount ||
+      (apiData.rent || 0) +
+      (apiData.electricityAmount || 0) +
+      (apiData.waterAmount || 0) +
+      (apiData.hotWaterAmount || 0) +
+      (apiData.otherFees || 0);
+
+    // 确定账单类型
+    let billType: BillType = BillType.RENT;
+    if (apiData.electricityAmount > 0) billType = BillType.ELECTRICITY;
+    if (apiData.waterAmount > 0) billType = BillType.WATER;
+    if (apiData.hotWaterAmount > 0) billType = BillType.HOT_WATER;
+    if (apiData.otherFees > 0) billType = BillType.OTHER;
+
+    // 转换状态
+    let status: BillStatus = BillStatus.PENDING;
+    if (apiData.billStatus === 'CONFIRMED') status = BillStatus.PENDING;
+    if (apiData.billStatus === 'PAID') status = BillStatus.PAID;
+
+    return {
+      id: apiData.id,
+      billNumber,
+      roomId: apiData.roomId,
+      roomNumber: apiData.roomNumber,
+      buildingId: apiData.buildingId || 0,
+      buildingName: apiData.buildingName,
+      tenantId: 0, // API没有提供
+      tenantName: undefined, // API没有提供
+
+      // 账单基本信息
+      billType,
+      billTypeDescription: this.getBillTypeDescription(billType),
+      title: `${apiData.billMonth} 月账单`,
+      description: apiData.notes || '',
+
+      // 金额信息
+      amount: totalAmount,
+      paidAmount: 0,
+      remainingAmount: totalAmount,
+
+      // 时间信息
+      billPeriod: apiData.billMonth,
+      dueDate: apiData.billDate,
+      paidAt: undefined,
+
+      // 状态信息
+      status,
+      statusDescription: apiData.billStatusDescription,
+      paymentMethod: undefined,
+      paymentMethodDescription: undefined,
+
+      // 备注和附件
+      notes: apiData.notes,
+      attachments: [],
+
+      // 审计字段
+      createdBy: apiData.createdBy,
+      createdByUsername: apiData.createdByUsername,
+      createdAt: apiData.createdAt,
+      updatedAt: apiData.updatedAt,
+
+      // 详细费用字段
+      rent: apiData.rent,
+      deposit: apiData.deposit,
+      electricityUsage: apiData.electricityUsage,
+      waterUsage: apiData.waterUsage,
+      hotWaterUsage: apiData.hotWaterUsage,
+      electricityAmount: apiData.electricityAmount,
+      waterAmount: apiData.waterAmount,
+      hotWaterAmount: apiData.hotWaterAmount,
+      otherFees: apiData.otherFees,
+      otherFeesDescription: apiData.otherFeesDescription,
+      billStatus: apiData.billStatus,
+
+      // 房间信息
+      room: {
+        id: apiData.roomId,
+        roomNumber: apiData.roomNumber,
+        buildingId: apiData.buildingId || 0,
+        buildingName: apiData.buildingName,
+        rent: apiData.rent || 0,
+        electricityUnitPrice: apiData.electricityUnitPrice || 0,
+        waterUnitPrice: apiData.waterUnitPrice || 0,
+        hotWaterUnitPrice: apiData.hotWaterUnitPrice || 0,
+      }
+    };
+  }
+
+  /**
+   * 获取账单类型描述
+   */
+  private getBillTypeDescription(billType: BillType): string {
+    const typeMap: Record<BillType, string> = {
+      [BillType.RENT]: '房租',
+      [BillType.ELECTRICITY]: '电费',
+      [BillType.WATER]: '水费',
+      [BillType.HOT_WATER]: '热水费',
+      [BillType.UTILITY]: '水电费',
+      [BillType.DEPOSIT]: '押金',
+      [BillType.OTHER]: '其他费用',
+    };
+    return typeMap[billType] || '未知';
+  }
+
+  /**
    * 获取账单详情（需要认证）
    */
   getBillDetail(billId: number): Observable<BillDetail> {
@@ -142,10 +254,11 @@ class BillService {
         }
 
         // 认证通过，执行API调用
-        apiService.get<BillDetail>(`${this.baseUrl}/${billId}`).pipe(
+        apiService.get<any>(`${this.baseUrl}/${billId}`).pipe(
           map((response) => {
             console.log('✅ 获取账单详情成功:', response);
-            return response.data;
+            // 转换API响应为BillDetail格式
+            return this.transformApiBillToBillDetail(response.data);
           }),
           catchError((error) => {
             console.error('❌ 获取账单详情失败:', error);
@@ -156,6 +269,8 @@ class BillService {
               error.message = '权限不足，无法获取账单详情';
             } else if (error.status === 404) {
               error.message = '账单不存在';
+            } else if (error.status === 500) {
+              error.message = '服务器内部错误，请稍后重试';
             }
 
             throw error;
@@ -441,9 +556,11 @@ class BillService {
 
   /**
    * 获取支付记录（需要认证）
+   * 注意：当前API不提供单独的支付记录接口，返回空数组
+   * 支付信息包含在账单详情中
    */
   getPaymentRecords(billId: number): Observable<PaymentRecord[]> {
-    console.log('💳 获取支付记录:', billId);
+    console.log('💳 获取支付记录:', billId, '(当前API不支持单独的支付记录接口)');
 
     // 先检查认证状态
     return new Observable(subscriber => {
@@ -454,26 +571,11 @@ class BillService {
           return;
         }
 
-        // 认证通过，执行API调用
-        apiService.get<PaymentRecord[]>(`${this.baseUrl}/${billId}/payments`).pipe(
-          map((response) => {
-            console.log('✅ 获取支付记录成功:', response);
-            return response.data;
-          }),
-          catchError((error) => {
-            console.error('❌ 获取支付记录失败:', error);
-
-            if (error.status === 401) {
-              error.message = '登录已过期，请重新登录后再试';
-            } else if (error.status === 403) {
-              error.message = '权限不足，无法获取支付记录';
-            } else if (error.status === 404) {
-              error.message = '账单不存在';
-            }
-
-            throw error;
-          })
-        ).subscribe(subscriber);
+        // 当前API不提供单独的支付记录接口，返回空数组
+        // 支付信息应该从账单详情中获取
+        console.log('ℹ️ 当前API不支持单独的支付记录接口，返回空数组');
+        subscriber.next([]);
+        subscriber.complete();
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));

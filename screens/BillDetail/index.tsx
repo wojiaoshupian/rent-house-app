@@ -121,6 +121,12 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
     navigation.navigate('EditBill' as never, { billId: bill.id } as never);
   };
 
+  // 处理生成电子账单
+  const handleGenerateCanvas = () => {
+    if (!bill) return;
+    navigation.navigate('BillCanvas' as never, { billId: bill.id } as never);
+  };
+
   // 处理删除
   const handleDeleteBill = () => {
     if (!bill) return;
@@ -305,7 +311,8 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
 
       {/* 底部操作按钮 */}
       <View className="bg-white border-t border-gray-200 p-4">
-        <View className="flex-row space-x-3">
+        {/* 第一行按钮 */}
+        <View className="flex-row space-x-3 mb-3">
           {bill.status === BillStatus.PENDING && (
             <TouchableOpacity
               className="flex-1 bg-green-500 py-3 rounded-lg"
@@ -314,19 +321,29 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
               <Text className="text-white text-center font-semibold">立即支付</Text>
             </TouchableOpacity>
           )}
-          
+
           <TouchableOpacity
             className="flex-1 bg-blue-500 py-3 rounded-lg"
             onPress={handleEditBill}
           >
             <Text className="text-white text-center font-semibold">编辑</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             className="flex-1 bg-red-500 py-3 rounded-lg"
             onPress={handleDeleteBill}
           >
             <Text className="text-white text-center font-semibold">删除</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* 第二行按钮 */}
+        <View className="flex-row space-x-3">
+          <TouchableOpacity
+            className="flex-1 bg-purple-500 py-3 rounded-lg"
+            onPress={handleGenerateCanvas}
+          >
+            <Text className="text-white text-center font-semibold">🎨 生成电子账单</Text>
           </TouchableOpacity>
         </View>
       </View>

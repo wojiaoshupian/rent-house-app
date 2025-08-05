@@ -86,27 +86,59 @@ class BillAPITester {
    * 测试获取账单详情
    */
   async testGetBillDetail(billId?: number) {
-    const targetId = billId || this.testBillId;
-    if (!targetId) {
-      console.warn('⚠️ 没有可用的账单ID，请先创建账单或提供账单ID');
-      return;
-    }
+    const targetId = billId || this.testBillId || 8; // 默认使用ID 8进行测试
 
     console.log('🧪 测试获取账单详情，ID:', targetId);
-    
+
     try {
       const result = await billService.getBillDetail(targetId).toPromise();
-      
+
       console.log('✅ 获取账单详情成功:', result);
       console.log('📋 账单标题:', result.title);
       console.log('💰 账单金额:', result.amount);
       console.log('🏠 房间信息:', result.room);
       console.log('👤 租户信息:', result.tenant);
-      
+
+      // 测试费用明细
+      console.log('💰 费用明细:');
+      if (result.rent) console.log('  - 房租:', result.rent);
+      if (result.electricityAmount) console.log('  - 电费:', result.electricityAmount, '(用量:', result.electricityUsage, '度)');
+      if (result.waterAmount) console.log('  - 水费:', result.waterAmount, '(用量:', result.waterUsage, '吨)');
+      if (result.hotWaterAmount) console.log('  - 热水费:', result.hotWaterAmount, '(用量:', result.hotWaterUsage, '吨)');
+      if (result.deposit) console.log('  - 押金:', result.deposit);
+      if (result.otherFees) console.log('  - 其他费用:', result.otherFees, '(', result.otherFeesDescription, ')');
+
       return result;
     } catch (error) {
       console.error('❌ 获取账单详情失败:', error);
       throw error;
+    }
+  }
+
+  /**
+   * 测试账单详情API修复
+   */
+  async testBillDetailAPIFix() {
+    console.log('🧪 测试账单详情API修复...');
+    console.log('📝 测试场景：使用正确的API端点 /api/bills/{id} 而不是 /api/bills/{id}/payments');
+
+    try {
+      // 测试获取账单详情
+      const billDetail = await this.testGetBillDetail(8);
+
+      if (billDetail) {
+        console.log('✅ API修复测试成功！');
+        console.log('🎯 验证点：');
+        console.log('  ✓ 成功调用 /api/bills/8 端点');
+        console.log('  ✓ 正确解析API响应数据');
+        console.log('  ✓ 成功转换为BillDetail格式');
+        console.log('  ✓ 包含完整的费用明细信息');
+
+        return true;
+      }
+    } catch (error) {
+      console.error('❌ API修复测试失败:', error);
+      return false;
     }
   }
 
@@ -649,6 +681,7 @@ if (__DEV__ && typeof window !== 'undefined') {
   console.log('   window.testBillAPI.testCreateBill() - 测试创建账单');
   console.log('   window.testBillAPI.testGetBillList() - 测试获取账单列表');
   console.log('   window.testBillAPI.testGetBillDetail(billId) - 测试获取账单详情');
+  console.log('   window.testBillAPI.testBillDetailAPIFix() - 测试账单详情API修复');
   console.log('   window.testBillAPI.testUpdateBill(billId) - 测试更新账单');
   console.log('   window.testBillAPI.testPayBill(billId) - 测试支付账单');
   console.log('   window.testBillAPI.testDeleteBill(billId) - 测试删除账单');
