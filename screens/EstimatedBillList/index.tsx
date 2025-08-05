@@ -8,7 +8,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { billService } from '../../services/billService';
 import { EstimatedBill, EstimatedBillStatus, ESTIMATED_BILL_STATUS_OPTIONS } from '../../types/bill';
 import { useUser } from '../../contexts/UserContext';
@@ -79,6 +79,14 @@ const EstimatedBillListScreen: React.FC<EstimatedBillListScreenProps> = () => {
   useEffect(() => {
     loadEstimatedBills();
   }, [selectedStatus]);
+
+  // 监听页面焦点变化，当从编辑页面返回时刷新数据
+  useFocusEffect(
+    React.useCallback(() => {
+      // 当页面获得焦点时刷新数据
+      loadEstimatedBills(false, 0);
+    }, [selectedStatus])
+  );
 
   // 获取状态颜色
   const getStatusColor = (status: EstimatedBillStatus) => {

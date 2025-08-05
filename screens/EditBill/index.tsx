@@ -35,6 +35,17 @@ const EditBillScreen: React.FC<EditBillScreenProps> = () => {
     notes: '',
   });
 
+  // 详细费用数据
+  const [detailedFees, setDetailedFees] = useState({
+    rent: '',
+    deposit: '',
+    electricityUsage: '',
+    waterUsage: '',
+    hotWaterUsage: '',
+    otherFees: '',
+    otherFeesDescription: '',
+  });
+
   // 表单验证错误
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -55,6 +66,17 @@ const EditBillScreen: React.FC<EditBillScreenProps> = () => {
         dueDate: billDetail.dueDate,
         status: billDetail.status,
         notes: billDetail.notes || '',
+      });
+
+      // 填充详细费用数据（如果存在）
+      setDetailedFees({
+        rent: (billDetail as any).rent?.toString() || '',
+        deposit: (billDetail as any).deposit?.toString() || '',
+        electricityUsage: (billDetail as any).electricityUsage?.toString() || '',
+        waterUsage: (billDetail as any).waterUsage?.toString() || '',
+        hotWaterUsage: (billDetail as any).hotWaterUsage?.toString() || '',
+        otherFees: (billDetail as any).otherFees?.toString() || '',
+        otherFeesDescription: (billDetail as any).otherFeesDescription || '',
       });
     } catch (error: any) {
       console.error('加载账单详情失败:', error);
@@ -106,7 +128,21 @@ const EditBillScreen: React.FC<EditBillScreenProps> = () => {
 
     try {
       setSaving(true);
-      await billService.updateBill(formData).toPromise();
+
+      // 合并基础表单数据和详细费用数据
+      const updateData = {
+        ...formData,
+        rent: detailedFees.rent ? parseFloat(detailedFees.rent) : undefined,
+        deposit: detailedFees.deposit ? parseFloat(detailedFees.deposit) : undefined,
+        electricityUsage: detailedFees.electricityUsage ? parseFloat(detailedFees.electricityUsage) : undefined,
+        waterUsage: detailedFees.waterUsage ? parseFloat(detailedFees.waterUsage) : undefined,
+        hotWaterUsage: detailedFees.hotWaterUsage ? parseFloat(detailedFees.hotWaterUsage) : undefined,
+        otherFees: detailedFees.otherFees ? parseFloat(detailedFees.otherFees) : undefined,
+        otherFeesDescription: detailedFees.otherFeesDescription || undefined,
+        billStatus: formData.status, // 映射 status 到 billStatus
+      };
+
+      await billService.updateBill(updateData as any).toPromise();
       Alert.alert('成功', '账单更新成功！', [
         { text: '确定', onPress: () => navigation.goBack() }
       ]);
@@ -121,6 +157,15 @@ const EditBillScreen: React.FC<EditBillScreenProps> = () => {
   // 更新表单数据
   const updateFormData = (field: keyof UpdateBillRequest, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // 清除对应字段的错误
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  // 更新详细费用数据
+  const updateDetailedFees = (field: keyof typeof detailedFees, value: string) => {
+    setDetailedFees(prev => ({ ...prev, [field]: value }));
     // 清除对应字段的错误
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -240,6 +285,96 @@ const EditBillScreen: React.FC<EditBillScreenProps> = () => {
           </View>
 
           {renderStatusSelector()}
+
+          {/* 详细费用信息 */}
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-gray-800 mb-4">详细费用信息</Text>
+
+            {/* 房租金额 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">房租金额</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入房租金额"
+                value={detailedFees.rent}
+                onChangeText={(text) => updateDetailedFees('rent', text)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* 押金金额 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">押金金额</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入押金金额"
+                value={detailedFees.deposit}
+                onChangeText={(text) => updateDetailedFees('deposit', text)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* 电费用量 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">电费用量</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入电费用量"
+                value={detailedFees.electricityUsage}
+                onChangeText={(text) => updateDetailedFees('electricityUsage', text)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* 水费用量 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">水费用量</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入水费用量"
+                value={detailedFees.waterUsage}
+                onChangeText={(text) => updateDetailedFees('waterUsage', text)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* 热水费用量 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">热水费用量</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入热水费用量"
+                value={detailedFees.hotWaterUsage}
+                onChangeText={(text) => updateDetailedFees('hotWaterUsage', text)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* 其他费用金额 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">其他费用金额</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入其他费用金额"
+                value={detailedFees.otherFees}
+                onChangeText={(text) => updateDetailedFees('otherFees', text)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* 其他费用说明 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">其他费用说明</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入其他费用说明"
+                value={detailedFees.otherFeesDescription}
+                onChangeText={(text) => updateDetailedFees('otherFeesDescription', text)}
+                multiline
+                numberOfLines={2}
+              />
+            </View>
+          </View>
 
           {/* 账单描述 */}
           <View className="mb-4">

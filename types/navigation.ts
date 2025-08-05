@@ -28,6 +28,7 @@ export type RootStackParamList = {
 
   // 预估账单相关
   EstimatedBillList: { roomId?: number; buildingId?: number };
+  EstimatedBillEdit: { billId: number };
 };
 
 export type RootNavigatorParamList = RootStackParamList;

@@ -8,7 +8,7 @@ import {
   Alert,
   RefreshControl
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/navigation';
 import { utilityReadingService } from '../../services/utilityReadingService';
@@ -49,6 +49,14 @@ export default function UtilityReadingListScreen() {
     fetchRooms();
     fetchReadings();
   }, [selectedRoomId, selectedBuildingId]);
+
+  // 监听页面焦点变化，当从编辑页面返回时刷新数据
+  useFocusEffect(
+    React.useCallback(() => {
+      // 当页面获得焦点时刷新数据
+      fetchReadings();
+    }, [selectedRoomId, selectedBuildingId])
+  );
 
   // 获取楼宇列表
   const fetchBuildings = () => {

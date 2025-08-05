@@ -103,6 +103,16 @@ export interface UpdateBillRequest {
   paidAt?: string;
   notes?: string;
   attachments?: string[];
+
+  // 详细费用字段
+  rent?: number;                    // 房租金额
+  deposit?: number;                 // 押金金额
+  electricityUsage?: number;        // 电费用量
+  waterUsage?: number;              // 水费用量
+  hotWaterUsage?: number;           // 热水费用量
+  otherFees?: number;               // 其他费用金额
+  otherFeesDescription?: string;    // 其他费用说明
+  billStatus?: string;              // 账单状态（字符串格式）
 }
 
 // 账单查询参数
@@ -152,6 +162,16 @@ export interface BillDetail extends Bill {
     waterCost?: number;
     hotWaterCost?: number;
   };
+
+  // 详细费用字段
+  rent?: number;                    // 房租金额
+  deposit?: number;                 // 押金金额
+  electricityUsage?: number;        // 电费用量
+  waterUsage?: number;              // 水费用量
+  hotWaterUsage?: number;           // 热水费用量
+  otherFees?: number;               // 其他费用金额
+  otherFeesDescription?: string;    // 其他费用说明
+  billStatus?: string;              // 账单状态（字符串格式）
 }
 
 // 账单统计信息

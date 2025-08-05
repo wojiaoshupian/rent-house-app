@@ -28,6 +28,7 @@ import BillDetailScreen from './screens/BillDetail';
 import CreateBillScreen from './screens/CreateBill';
 import EditBillScreen from './screens/EditBill';
 import EstimatedBillListScreen from './screens/EstimatedBillList';
+import EstimatedBillEditScreen from './screens/EstimatedBillEdit';
 import { UserProvider } from './contexts/UserContext';
 
 // 导入测试工具（开发环境）
@@ -176,6 +177,11 @@ export default function App() {
               name="EstimatedBillList"
               component={EstimatedBillListScreen}
               options={{ title: '预估账单' }}
+            />
+            <Stack.Screen
+              name="EstimatedBillEdit"
+              component={EstimatedBillEditScreen}
+              options={{ title: '编辑预估账单' }}
             />
           </Stack.Navigator>
           <StatusBar style="auto" />

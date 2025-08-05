@@ -8,7 +8,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { billService } from '../../services/billService';
 import { Bill, BillStatus, BillType, BILL_STATUS_OPTIONS, BILL_TYPE_OPTIONS } from '../../types/bill';
 import { useUser } from '../../contexts/UserContext';
@@ -55,6 +55,14 @@ const BillListScreen: React.FC<BillListScreenProps> = () => {
   useEffect(() => {
     loadBills();
   }, [selectedStatus, selectedType]);
+
+  // 监听页面焦点变化，当从编辑页面返回时刷新数据
+  useFocusEffect(
+    React.useCallback(() => {
+      // 当页面获得焦点时刷新数据
+      loadBills(false);
+    }, [selectedStatus, selectedType])
+  );
 
   // 获取状态颜色
   const getStatusColor = (status: BillStatus) => {
