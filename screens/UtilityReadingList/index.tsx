@@ -127,42 +127,42 @@ export default function UtilityReadingListScreen() {
 
   // 删除抄表记录
   const handleDeleteReading = (reading: UtilityReading) => {
-    // Alert.alert(
-    //   '确认删除',
-    //   `确定要删除房间"${reading.roomNumber}"在${reading.readingDate}的抄表记录吗？此操作不可恢复。`,
-    //   [
-    //     { text: '取消', style: 'cancel' },
-    //     {
-    //       text: '删除',
-    //       style: 'destructive',
-    //       onPress: () => {
-    //         utilityReadingService.deleteUtilityReading(reading.id).subscribe({
-    //           next: () => {
-    //             console.log('✅ 删除抄表记录成功');
-    //             Alert.alert('删除成功', '抄表记录已删除');
-    //             fetchReadings(); // 重新获取列表
-    //           },
-    //           error: (error) => {
-    //             console.error('❌ 删除抄表记录失败:', error);
+    Alert.alert(
+      '确认删除',
+      `确定要删除房间"${reading.roomNumber}"在${reading.readingDate}的抄表记录吗？此操作不可恢复。`,
+      [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '删除',
+          style: 'destructive',
+          onPress: () => {
+            utilityReadingService.deleteUtilityReading(reading.id).subscribe({
+              next: () => {
+                console.log('✅ 删除抄表记录成功');
+                Alert.alert('删除成功', '抄表记录已删除');
+                fetchReadings(); // 重新获取列表
+              },
+              error: (error) => {
+                console.error('❌ 删除抄表记录失败:', error);
 
-    //             // 优先显示接口返回的错误信息
-    //             let errorMessage = '删除抄表记录时发生错误';
+                // 优先显示接口返回的错误信息
+                let errorMessage = '删除抄表记录时发生错误';
 
-    //             if (error.message) {
-    //               errorMessage = error.message;
-    //             } else if (error.data?.message) {
-    //               errorMessage = error.data.message;
-    //             } else if (error.response?.data?.message) {
-    //               errorMessage = error.response.data.message;
-    //             }
+                if (error.message) {
+                  errorMessage = error.message;
+                } else if (error.data?.message) {
+                  errorMessage = error.data.message;
+                } else if (error.response?.data?.message) {
+                  errorMessage = error.response.data.message;
+                }
 
-    //             Alert.alert('删除失败', errorMessage);
-    //           }
-    //         });
-    //       }
-    //     }
-    //   ]
-    // );
+                Alert.alert('删除失败', errorMessage);
+              }
+            });
+          }
+        }
+      ]
+    );
   };
 
   // 确认抄表记录
@@ -187,48 +187,48 @@ export default function UtilityReadingListScreen() {
           errorMessage = error.response.data.message;
         }
 
-        // Alert.alert('确认失败', errorMessage);
+        Alert.alert('确认失败', errorMessage);
       }
     });
   };
 
   // 争议抄表记录
   const handleDisputeReading = (reading: UtilityReading) => {
-    // Alert.alert(
-    //   '标记争议',
-    //   `确定要将房间"${reading.roomNumber}"在${reading.readingDate}的抄表记录标记为有争议吗？`,
-    //   [
-    //     { text: '取消', style: 'cancel' },
-    //     {
-    //       text: '确定',
-    //       onPress: () => {
-    //         utilityReadingService.disputeUtilityReading(reading.id, '用户标记为争议').subscribe({
-    //           next: (disputedReading) => {
-    //             console.log('✅ 标记争议成功');
-    //             Alert.alert('标记成功', '抄表记录已标记为有争议');
-    //             fetchReadings(); // 重新获取列表
-    //           },
-    //           error: (error) => {
-    //             console.error('❌ 标记争议失败:', error);
+    Alert.alert(
+      '标记争议',
+      `确定要将房间"${reading.roomNumber}"在${reading.readingDate}的抄表记录标记为有争议吗？`,
+      [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '确定',
+          onPress: () => {
+            utilityReadingService.disputeUtilityReading(reading.id, '用户标记为争议').subscribe({
+              next: (disputedReading) => {
+                console.log('✅ 标记争议成功');
+                Alert.alert('标记成功', '抄表记录已标记为有争议');
+                fetchReadings(); // 重新获取列表
+              },
+              error: (error) => {
+                console.error('❌ 标记争议失败:', error);
 
-    //             // 优先显示接口返回的错误信息
-    //             let errorMessage = '标记争议时发生错误';
+                // 优先显示接口返回的错误信息
+                let errorMessage = '标记争议时发生错误';
 
-    //             if (error.message) {
-    //               errorMessage = error.message;
-    //             } else if (error.data?.message) {
-    //               errorMessage = error.data.message;
-    //             } else if (error.response?.data?.message) {
-    //               errorMessage = error.response.data.message;
-    //             }
+                if (error.message) {
+                  errorMessage = error.message;
+                } else if (error.data?.message) {
+                  errorMessage = error.data.message;
+                } else if (error.response?.data?.message) {
+                  errorMessage = error.response.data.message;
+                }
 
-    //             Alert.alert('标记失败', errorMessage);
-    //           }
-    //         });
-    //       }
-    //     }
-    //   ]
-    // );
+                Alert.alert('标记失败', errorMessage);
+              }
+            });
+          }
+        }
+      ]
+    );
   };
 
   // 获取读数状态显示文本和颜色
