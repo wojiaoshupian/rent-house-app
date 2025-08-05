@@ -170,7 +170,7 @@ export default function UtilityReadingListScreen() {
     utilityReadingService.confirmUtilityReading(reading.id).subscribe({
       next: (confirmedReading) => {
         console.log('✅ 确认抄表记录成功');
-        // Alert.alert('确认成功', '抄表记录已确认');
+        Alert.alert('确认成功', '抄表记录已确认');
         fetchReadings(); // 重新获取列表
       },
       error: (error) => {
