@@ -143,83 +143,47 @@ export default function CreateRoomScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+    <View className="flex-1 bg-gray-100">
       {/* Header */}
-      <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3
-      }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <View className="bg-white px-5 py-4 shadow-sm">
+        <View className="flex-row items-center justify-between">
           <View>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#1f2937' }}>
+            <Text className="text-2xl font-bold text-gray-800">
               创建房间
             </Text>
-            <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>
+            <Text className="text-sm text-gray-500 mt-1">
               添加新的房间信息
             </Text>
           </View>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{
-              backgroundColor: '#6b7280',
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              borderRadius: 8
-            }}
+            className="bg-gray-500 px-4 py-2 rounded-lg"
           >
-            <Text style={{ color: 'white', fontWeight: '600' }}>返回</Text>
+            <Text className="text-white font-semibold">返回</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView style={{ flex: 1, padding: 20 }}>
+      <ScrollView className="flex-1 p-5">
         {/* 表单卡片 */}
-        <View style={{
-          backgroundColor: 'white',
-          borderRadius: 12,
-          padding: 20,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-          elevation: 3
-        }}>
+        <View className="bg-white rounded-xl p-5 shadow-sm">
           {/* 楼宇选择 */}
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#374151' }}>
+          <View className="mb-5">
+            <Text className="text-base font-semibold mb-2 text-gray-700">
               所属楼宇 *
             </Text>
             <TouchableOpacity
               onPress={() => setShowBuildingPicker(!showBuildingPicker)}
-              style={{
-                borderWidth: 1,
-                borderColor: '#d1d5db',
-                borderRadius: 8,
-                padding: 12,
-                backgroundColor: '#f9fafb'
-              }}
+              className="border border-gray-300 rounded-lg p-3 bg-gray-50"
             >
-              <Text style={{ fontSize: 16, color: formData.buildingId ? '#374151' : '#9ca3af' }}>
+              <Text className={`text-base ${formData.buildingId ? 'text-gray-700' : 'text-gray-400'}`}>
                 {loadingBuildings ? '加载中...' : getSelectedBuildingName()}
               </Text>
             </TouchableOpacity>
 
             {/* 楼宇选择器 */}
             {showBuildingPicker && (
-              <View style={{
-                marginTop: 8,
-                borderWidth: 1,
-                borderColor: '#d1d5db',
-                borderRadius: 8,
-                backgroundColor: 'white',
-                maxHeight: 200
-              }}>
+              <View className="mt-2 border border-gray-300 rounded-lg bg-white max-h-48">
                 <ScrollView>
                   {buildings.map((building) => (
                     <TouchableOpacity
@@ -228,16 +192,12 @@ export default function CreateRoomScreen() {
                         setFormData(prev => ({ ...prev, buildingId: building.id }));
                         setShowBuildingPicker(false);
                       }}
-                      style={{
-                        padding: 12,
-                        borderBottomWidth: 1,
-                        borderBottomColor: '#f3f4f6'
-                      }}
+                      className="p-3 border-b border-gray-100"
                     >
-                      <Text style={{ fontSize: 16, color: '#374151' }}>
+                      <Text className="text-base text-gray-700">
                         {building.buildingName}
                       </Text>
-                      <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+                      <Text className="text-xs text-gray-500 mt-0.5">
                         房东：{building.landlordName}
                       </Text>
                     </TouchableOpacity>
@@ -248,18 +208,12 @@ export default function CreateRoomScreen() {
           </View>
 
           {/* 房间号 */}
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#374151' }}>
+          <View className="mb-5">
+            <Text className="text-base font-semibold mb-2 text-gray-700">
               房间号 *
             </Text>
             <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: '#d1d5db',
-                borderRadius: 8,
-                padding: 12,
-                fontSize: 16
-              }}
+              className="border border-gray-300 rounded-lg p-3 text-base"
               value={formData.roomNumber}
               onChangeText={(text) => setFormData(prev => ({ ...prev, roomNumber: text }))}
               placeholder="请输入房间号，如：101"
@@ -268,18 +222,12 @@ export default function CreateRoomScreen() {
           </View>
 
           {/* 租金 */}
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#374151' }}>
+          <View className="mb-5">
+            <Text className="text-base font-semibold mb-2 text-gray-700">
               月租金 (元) *
             </Text>
             <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: '#d1d5db',
-                borderRadius: 8,
-                padding: 12,
-                fontSize: 16
-              }}
+              className="border border-gray-300 rounded-lg p-3 text-base"
               value={formData.rent.toString()}
               onChangeText={(text) => setFormData(prev => ({ ...prev, rent: parseFloat(text) || 0 }))}
               placeholder="请输入月租金"
@@ -289,18 +237,12 @@ export default function CreateRoomScreen() {
           </View>
 
           {/* 押金 */}
-          <View style={{ marginBottom: 20 }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#374151' }}>
+          <View className="mb-5">
+            <Text className="text-base font-semibold mb-2 text-gray-700">
               默认押金 (元) *
             </Text>
             <TextInput
-              style={{
-                borderWidth: 1,
-                borderColor: '#d1d5db',
-                borderRadius: 8,
-                padding: 12,
-                fontSize: 16
-              }}
+              className="border border-gray-300 rounded-lg p-3 text-base"
               value={formData.defaultDeposit.toString()}
               onChangeText={(text) => setFormData(prev => ({ ...prev, defaultDeposit: parseFloat(text) || 0 }))}
               placeholder="请输入默认押金"

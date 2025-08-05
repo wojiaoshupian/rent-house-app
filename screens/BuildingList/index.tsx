@@ -391,39 +391,20 @@ export const BuildingListScreen = () => {
         animationType="slide"
         onRequestClose={handleCancelEdit}
       >
-        <View style={{
-          flex: 1,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: 20
-        }}>
-          <View style={{
-            backgroundColor: 'white',
-            borderRadius: 15,
-            padding: 20,
-            width: '100%',
-            maxWidth: 400,
-            maxHeight: '80%'
-          }}>
-            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' }}>
+        <View className="flex-1 bg-black/50 justify-center items-center p-5">
+          <View className="bg-white rounded-2xl p-5 w-full max-w-sm max-h-4/5">
+            <Text className="text-xl font-bold mb-5 text-center">
               编辑楼宇信息
             </Text>
 
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* 楼宇名称 */}
-              <View style={{ marginBottom: 15 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 5, color: '#374151' }}>
+              <View className="mb-4">
+                <Text className="text-base font-semibold mb-1 text-gray-700">
                   楼宇名称 *
                 </Text>
                 <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: '#d1d5db',
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16
-                  }}
+                  className="border border-gray-300 rounded-lg p-3 text-base"
                   value={editForm.buildingName}
                   onChangeText={(text) => setEditForm(prev => ({ ...prev, buildingName: text }))}
                   placeholder="请输入楼宇名称"
@@ -431,18 +412,12 @@ export const BuildingListScreen = () => {
               </View>
 
               {/* 房东姓名 */}
-              <View style={{ marginBottom: 15 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 5, color: '#374151' }}>
+              <View className="mb-4">
+                <Text className="text-base font-semibold mb-1 text-gray-700">
                   房东姓名 *
                 </Text>
                 <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: '#d1d5db',
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16
-                  }}
+                  className="border border-gray-300 rounded-lg p-3 text-base"
                   value={editForm.landlordName}
                   onChangeText={(text) => setEditForm(prev => ({ ...prev, landlordName: text }))}
                   placeholder="请输入房东姓名"
@@ -450,18 +425,12 @@ export const BuildingListScreen = () => {
               </View>
 
               {/* 电费单价 */}
-              <View style={{ marginBottom: 15 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 5, color: '#374151' }}>
+              <View className="mb-4">
+                <Text className="text-base font-semibold mb-1 text-gray-700">
                   电费单价 (元/度) *
                 </Text>
                 <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: '#d1d5db',
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16
-                  }}
+                  className="border border-gray-300 rounded-lg p-3 text-base"
                   value={editForm.electricityUnitPrice}
                   onChangeText={(text) => setEditForm(prev => ({ ...prev, electricityUnitPrice: text }))}
                   placeholder="请输入电费单价"
@@ -470,18 +439,12 @@ export const BuildingListScreen = () => {
               </View>
 
               {/* 水费单价 */}
-              <View style={{ marginBottom: 15 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 5, color: '#374151' }}>
+              <View className="mb-4">
+                <Text className="text-base font-semibold mb-1 text-gray-700">
                   水费单价 (元/吨) *
                 </Text>
                 <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: '#d1d5db',
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16
-                  }}
+                  className="border border-gray-300 rounded-lg p-3 text-base"
                   value={editForm.waterUnitPrice}
                   onChangeText={(text) => setEditForm(prev => ({ ...prev, waterUnitPrice: text }))}
                   placeholder="请输入水费单价"
@@ -490,18 +453,12 @@ export const BuildingListScreen = () => {
               </View>
 
               {/* 热水单价 */}
-              <View style={{ marginBottom: 20 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 5, color: '#374151' }}>
+              <View className="mb-5">
+                <Text className="text-base font-semibold mb-1 text-gray-700">
                   热水单价 (元/吨)
                 </Text>
                 <TextInput
-                  style={{
-                    borderWidth: 1,
-                    borderColor: '#d1d5db',
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16
-                  }}
+                  className="border border-gray-300 rounded-lg p-3 text-base"
                   value={editForm.hotWaterUnitPrice}
                   onChangeText={(text) => setEditForm(prev => ({ ...prev, hotWaterUnitPrice: text }))}
                   placeholder="请输入热水单价（可选）"
@@ -511,33 +468,21 @@ export const BuildingListScreen = () => {
             </ScrollView>
 
             {/* 操作按钮 */}
-            <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View className="flex-row space-x-2">
               <TouchableOpacity
-                style={{
-                  flex: 1,
-                  backgroundColor: '#6b7280',
-                  padding: 15,
-                  borderRadius: 8,
-                  alignItems: 'center'
-                }}
+                className="flex-1 bg-gray-500 p-4 rounded-lg items-center"
                 onPress={handleCancelEdit}
               >
-                <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>
+                <Text className="text-white text-base font-semibold">
                   取消
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={{
-                  flex: 1,
-                  backgroundColor: '#3b82f6',
-                  padding: 15,
-                  borderRadius: 8,
-                  alignItems: 'center'
-                }}
+                className="flex-1 bg-blue-500 p-4 rounded-lg items-center"
                 onPress={handleSaveEdit}
               >
-                <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>
+                <Text className="text-white text-base font-semibold">
                   保存
                 </Text>
               </TouchableOpacity>

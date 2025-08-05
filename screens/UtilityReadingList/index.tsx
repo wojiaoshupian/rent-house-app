@@ -292,52 +292,39 @@ export default function UtilityReadingListScreen() {
     return (
       <View
         key={reading.id}
-        style={{
-          backgroundColor: 'white',
-          borderRadius: 12,
-          padding: 16,
-          marginBottom: 12,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 4,
-          elevation: 3
-        }}
+        className="bg-white rounded-xl p-4 mb-3 shadow-sm"
       >
         {/* 头部信息 */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+        <View className="flex-row justify-between items-center mb-3">
           <View>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#1f2937' }}>
+            <Text className="text-lg font-bold text-gray-800">
               房间 {reading.roomNumber || room?.roomNumber}
             </Text>
-            <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }}>
+            <Text className="text-sm text-gray-500 mt-0.5">
               {reading.readingDate} • {getReadingTypeText(reading.readingType)}抄表
             </Text>
           </View>
           <View style={{
             backgroundColor: statusDisplay.color,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderRadius: 12
-          }}>
-            <Text style={{ color: 'white', fontSize: 12, fontWeight: '600' }}>
+          }} className="px-2 py-1 rounded-xl">
+            <Text className="text-white text-xs font-semibold">
               {statusDisplay.text}
             </Text>
           </View>
         </View>
 
         {/* 读数信息 */}
-        <View style={{ marginBottom: 12 }}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
-            <Text style={{ fontSize: 14, color: '#6b7280' }}>
+        <View className="mb-3">
+          <View className="flex-row justify-between mb-2">
+            <Text className="text-sm text-gray-500">
               ⚡ 电表: {reading?.electricityReading} 度
             </Text>
-            <Text style={{ fontSize: 14, color: '#6b7280' }}>
+            <Text className="text-sm text-gray-500">
               💧 水表: {reading?.waterReading} 吨
             </Text>
             <Text>
               {reading?.hotWaterReading && (
-                <Text style={{ fontSize: 14, color: '#6b7280' }}>
+                <Text className="text-sm text-gray-500">
                   🔥 热水: {reading?.hotWaterReading} 吨
                 </Text>
               )}
@@ -345,11 +332,11 @@ export default function UtilityReadingListScreen() {
 
           </View>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={{ fontSize: 12, color: '#9ca3af' }}>
+          <View className="flex-row justify-between">
+            <Text className="text-xs text-gray-400">
               抄表人: {reading.meterReader}
             </Text>
-            <Text style={{ fontSize: 12, color: '#9ca3af' }}>
+            <Text className="text-xs text-gray-400">
               {reading.createdAt ? new Date(reading?.createdAt).toLocaleString() : ''}
             </Text>
           </View>
@@ -357,60 +344,39 @@ export default function UtilityReadingListScreen() {
 
         {/* 备注 */}
         {reading.notes && (
-          <View style={{ marginBottom: 12 }}>
-            <Text style={{ fontSize: 12, color: '#6b7280', fontStyle: 'italic' }}>
+          <View className="mb-3">
+            <Text className="text-xs text-gray-500 italic">
               备注: {reading.notes}
             </Text>
           </View>
         )}
 
         {/* 操作按钮 */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View className="flex-row justify-between">
           <TouchableOpacity
-            style={{
-              backgroundColor: '#3b82f6',
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 6,
-              flex: 1,
-              marginRight: 6
-            }}
+            className="bg-blue-500 px-3 py-1.5 rounded flex-1 mr-1.5"
             onPress={() => navigation.navigate('UtilityReadingDetail', { readingId: reading.id })}
           >
-            <Text style={{ color: 'white', fontSize: 12, fontWeight: '600', textAlign: 'center' }}>
+            <Text className="text-white text-xs font-semibold text-center">
               查看详情
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={{
-              backgroundColor: '#10b981',
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 6,
-              flex: 1,
-              marginRight: 6
-            }}
+            className="bg-green-500 px-3 py-1.5 rounded flex-1 mr-1.5"
             onPress={() => navigation.navigate('EditUtilityReading', { readingId: reading.id })}
           >
-            <Text style={{ color: 'white', fontSize: 12, fontWeight: '600', textAlign: 'center' }}>
+            <Text className="text-white text-xs font-semibold text-center">
               编辑
             </Text>
           </TouchableOpacity>
 
           {reading.readingStatus === ReadingStatus.PENDING && (
             <TouchableOpacity
-              style={{
-                backgroundColor: '#f59e0b',
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-                borderRadius: 6,
-                flex: 1,
-                marginRight: 6
-              }}
+              className="bg-amber-500 px-3 py-1.5 rounded flex-1 mr-1.5"
               onPress={() => handleConfirmReading(reading)}
             >
-              <Text style={{ color: 'white', fontSize: 12, fontWeight: '600', textAlign: 'center' }}>
+              <Text className="text-white text-xs font-semibold text-center">
                 确认
               </Text>
             </TouchableOpacity>
@@ -418,33 +384,20 @@ export default function UtilityReadingListScreen() {
 
           {reading.readingStatus === ReadingStatus.CONFIRMED && (
             <TouchableOpacity
-              style={{
-                backgroundColor: '#ef4444',
-                paddingHorizontal: 12,
-                paddingVertical: 6,
-                borderRadius: 6,
-                flex: 1,
-                marginRight: 6
-              }}
+              className="bg-red-500 px-3 py-1.5 rounded flex-1 mr-1.5"
               onPress={() => handleDisputeReading(reading)}
             >
-              <Text style={{ color: 'white', fontSize: 12, fontWeight: '600', textAlign: 'center' }}>
+              <Text className="text-white text-xs font-semibold text-center">
                 争议
               </Text>
             </TouchableOpacity>
           )}
 
           <TouchableOpacity
-            style={{
-              backgroundColor: '#ef4444',
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 6,
-              flex: 1
-            }}
+            className="bg-red-500 px-3 py-1.5 rounded flex-1"
             onPress={() => handleDeleteReading(reading)}
           >
-            <Text style={{ color: 'white', fontSize: 12, fontWeight: '600', textAlign: 'center' }}>
+            <Text className="text-white text-xs font-semibold text-center">
               删除
             </Text>
           </TouchableOpacity>
@@ -454,112 +407,69 @@ export default function UtilityReadingListScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+    <View className="flex-1 bg-gray-100">
       {/* Header */}
-      <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3
-      }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+      <View className="bg-white px-5 py-4 shadow-sm">
+        <View className="flex-row items-center justify-between">
           <View>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#1f2937' }}>
+            <Text className="text-2xl font-bold text-gray-800">
               抄表记录
             </Text>
-            <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>
+            <Text className="text-sm text-gray-500 mt-1">
               {getFilterDisplayText()} - 共 {readings.length} 条记录
             </Text>
           </View>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View className="flex-row space-x-2">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
-              style={{
-                backgroundColor: '#6b7280',
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                borderRadius: 8
-              }}
+              className="bg-gray-500 px-3 py-2 rounded-lg"
             >
-              <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>返回</Text>
+              <Text className="text-white font-semibold text-sm">返回</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => fetchReadings(true)}
               disabled={refreshing}
-              style={{
-                backgroundColor: refreshing ? '#9ca3af' : '#10b981',
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                borderRadius: 8
-              }}
+              className={`px-3 py-2 rounded-lg ${refreshing ? 'bg-gray-400' : 'bg-green-500'}`}
             >
-              <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>
+              <Text className="text-white font-semibold text-sm">
                 {refreshing ? '刷新中...' : '🔄 刷新'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               onPress={() => navigation.navigate('CreateUtilityReading', { roomId: selectedRoomId })}
-              style={{
-                backgroundColor: '#06B6D4',
-                paddingHorizontal: 12,
-                paddingVertical: 8,
-                borderRadius: 8
-              }}
+              className="bg-cyan-500 px-3 py-2 rounded-lg"
             >
-              <Text style={{ color: 'white', fontWeight: '600', fontSize: 14 }}>+ 新建</Text>
+              <Text className="text-white font-semibold text-sm">+ 新建</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
 
       {/* 筛选器 */}
-      <View style={{
-        backgroundColor: 'white',
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f3f4f6'
-      }}>
+      <View className="bg-white px-5 py-3 border-b border-gray-100">
         {/* 楼宇筛选 */}
         <TouchableOpacity
           onPress={() => setShowBuildingFilter(!showBuildingFilter)}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingVertical: 8,
-            marginBottom: 8
-          }}
+          className="flex-row items-center justify-between py-2 mb-2"
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#374151', marginRight: 8 }}>
+          <View className="flex-row items-center">
+            <Text className="text-base font-semibold text-gray-700 mr-2">
               🏢 筛选楼宇
             </Text>
-            <Text style={{ fontSize: 14, color: '#6b7280' }}>
+            <Text className="text-sm text-gray-500">
               {getSelectedBuildingName()}
             </Text>
           </View>
-          <Text style={{ fontSize: 16, color: '#6b7280' }}>
+          <Text className="text-base text-gray-500">
             {showBuildingFilter ? '▲' : '▼'}
           </Text>
         </TouchableOpacity>
 
         {/* 楼宇筛选器 */}
         {showBuildingFilter && (
-          <View style={{
-            marginBottom: 12,
-            borderWidth: 1,
-            borderColor: '#d1d5db',
-            borderRadius: 8,
-            backgroundColor: '#f9fafb',
-            maxHeight: 200
-          }}>
+          <View className="mb-3 border border-gray-300 rounded-lg bg-gray-50 max-h-48">
             <ScrollView>
               {/* 全部楼宇选项 */}
               <TouchableOpacity
@@ -568,18 +478,9 @@ export default function UtilityReadingListScreen() {
                   setSelectedRoomId(undefined); // 清除房间筛选
                   setShowBuildingFilter(false);
                 }}
-                style={{
-                  padding: 12,
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#e5e7eb',
-                  backgroundColor: !selectedBuildingId ? '#e0f2fe' : 'transparent'
-                }}
+                className={`p-3 border-b border-gray-200 ${!selectedBuildingId ? 'bg-sky-100' : 'bg-transparent'}`}
               >
-                <Text style={{
-                  fontSize: 16,
-                  color: !selectedBuildingId ? '#0369a1' : '#374151',
-                  fontWeight: !selectedBuildingId ? '600' : 'normal'
-                }}>
+                <Text className={`text-base ${!selectedBuildingId ? 'text-sky-700 font-semibold' : 'text-gray-700'}`}>
                   🏘️ 全部楼宇
                 </Text>
               </TouchableOpacity>
@@ -593,25 +494,12 @@ export default function UtilityReadingListScreen() {
                     setSelectedRoomId(undefined); // 清除房间筛选
                     setShowBuildingFilter(false);
                   }}
-                  style={{
-                    padding: 12,
-                    borderBottomWidth: 1,
-                    borderBottomColor: '#e5e7eb',
-                    backgroundColor: selectedBuildingId === building.id ? '#e0f2fe' : 'transparent'
-                  }}
+                  className={`p-3 border-b border-gray-200 ${selectedBuildingId === building.id ? 'bg-sky-100' : 'bg-transparent'}`}
                 >
-                  <Text style={{
-                    fontSize: 16,
-                    color: selectedBuildingId === building.id ? '#0369a1' : '#374151',
-                    fontWeight: selectedBuildingId === building.id ? '600' : 'normal'
-                  }}>
+                  <Text className={`text-base ${selectedBuildingId === building.id ? 'text-sky-700 font-semibold' : 'text-gray-700'}`}>
                     🏢 {building.buildingName}
                   </Text>
-                  <Text style={{
-                    fontSize: 12,
-                    color: selectedBuildingId === building.id ? '#0369a1' : '#6b7280',
-                    marginTop: 2
-                  }}>
+                  <Text className={`text-xs mt-0.5 ${selectedBuildingId === building.id ? 'text-sky-700' : 'text-gray-500'}`}>
                     房东：{building.landlordName}
                   </Text>
                 </TouchableOpacity>
@@ -623,36 +511,24 @@ export default function UtilityReadingListScreen() {
         {/* 房间筛选 */}
         <TouchableOpacity
           onPress={() => setShowRoomFilter(!showRoomFilter)}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingVertical: 8
-          }}
+          className="flex-row items-center justify-between py-2"
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text style={{ fontSize: 16, fontWeight: '600', color: '#374151', marginRight: 8 }}>
+          <View className="flex-row items-center">
+            <Text className="text-base font-semibold text-gray-700 mr-2">
               🏠 筛选房间
             </Text>
-            <Text style={{ fontSize: 14, color: '#6b7280' }}>
+            <Text className="text-sm text-gray-500">
               {getSelectedRoomName()}
             </Text>
           </View>
-          <Text style={{ fontSize: 16, color: '#6b7280' }}>
+          <Text className="text-base text-gray-500">
             {showRoomFilter ? '▲' : '▼'}
           </Text>
         </TouchableOpacity>
 
         {/* 房间筛选器 */}
         {showRoomFilter && (
-          <View style={{
-            marginTop: 8,
-            borderWidth: 1,
-            borderColor: '#d1d5db',
-            borderRadius: 8,
-            backgroundColor: '#f9fafb',
-            maxHeight: 200
-          }}>
+          <View className="mt-2 border border-gray-300 rounded-lg bg-gray-50 max-h-48">
             <ScrollView>
               {/* 全部房间选项 */}
               <TouchableOpacity
@@ -660,18 +536,9 @@ export default function UtilityReadingListScreen() {
                   setSelectedRoomId(undefined);
                   setShowRoomFilter(false);
                 }}
-                style={{
-                  padding: 12,
-                  borderBottomWidth: 1,
-                  borderBottomColor: '#e5e7eb',
-                  backgroundColor: !selectedRoomId ? '#e0f2fe' : 'transparent'
-                }}
+                className={`p-3 border-b border-gray-200 ${!selectedRoomId ? 'bg-sky-100' : 'bg-transparent'}`}
               >
-                <Text style={{
-                  fontSize: 16,
-                  color: !selectedRoomId ? '#0369a1' : '#374151',
-                  fontWeight: !selectedRoomId ? '600' : 'normal'
-                }}>
+                <Text className={`text-base ${!selectedRoomId ? 'text-sky-700 font-semibold' : 'text-gray-700'}`}>
                   🏘️ 全部房间
                 </Text>
               </TouchableOpacity>
@@ -684,25 +551,12 @@ export default function UtilityReadingListScreen() {
                     setSelectedRoomId(room.id);
                     setShowRoomFilter(false);
                   }}
-                  style={{
-                    padding: 12,
-                    borderBottomWidth: 1,
-                    borderBottomColor: '#e5e7eb',
-                    backgroundColor: selectedRoomId === room.id ? '#e0f2fe' : 'transparent'
-                  }}
+                  className={`p-3 border-b border-gray-200 ${selectedRoomId === room.id ? 'bg-sky-100' : 'bg-transparent'}`}
                 >
-                  <Text style={{
-                    fontSize: 16,
-                    color: selectedRoomId === room.id ? '#0369a1' : '#374151',
-                    fontWeight: selectedRoomId === room.id ? '600' : 'normal'
-                  }}>
+                  <Text className={`text-base ${selectedRoomId === room.id ? 'text-sky-700 font-semibold' : 'text-gray-700'}`}>
                     🏠 房间 {room.roomNumber}
                   </Text>
-                  <Text style={{
-                    fontSize: 12,
-                    color: selectedRoomId === room.id ? '#0369a1' : '#6b7280',
-                    marginTop: 2
-                  }}>
+                  <Text className={`text-xs mt-0.5 ${selectedRoomId === room.id ? 'text-sky-700' : 'text-gray-500'}`}>
                     租金：¥{room.rent}/月
                   </Text>
                 </TouchableOpacity>
@@ -714,47 +568,33 @@ export default function UtilityReadingListScreen() {
 
       {/* 内容区域 */}
       <ScrollView
-        style={{ flex: 1, padding: 20 }}
+        className="flex-1 p-5"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
         {/* 加载状态 */}
         {loading && (
-          <View style={{ alignItems: 'center', paddingVertical: 40 }}>
+          <View className="items-center py-10">
             <ActivityIndicator size="large" color="#06B6D4" />
-            <Text style={{ marginTop: 12, color: '#6b7280' }}>加载抄表记录中...</Text>
+            <Text className="mt-3 text-gray-500">加载抄表记录中...</Text>
           </View>
         )}
 
         {/* 错误状态 */}
         {error && !loading && (
-          <View style={{
-            backgroundColor: '#fef2f2',
-            borderColor: '#fecaca',
-            borderWidth: 1,
-            borderRadius: 8,
-            padding: 16,
-            marginBottom: 16
-          }}>
-            <Text style={{ color: '#dc2626', fontSize: 16, fontWeight: '600' }}>
+          <View className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <Text className="text-red-600 text-base font-semibold">
               获取抄表记录失败
             </Text>
-            <Text style={{ color: '#dc2626', marginTop: 4 }}>
+            <Text className="text-red-600 mt-1">
               {error}
             </Text>
             <TouchableOpacity
               onPress={() => fetchReadings()}
-              style={{
-                backgroundColor: '#dc2626',
-                paddingHorizontal: 16,
-                paddingVertical: 8,
-                borderRadius: 6,
-                marginTop: 12,
-                alignSelf: 'flex-start'
-              }}
+              className="bg-red-600 px-4 py-2 rounded self-start mt-3"
             >
-              <Text style={{ color: 'white', fontWeight: '600' }}>重试</Text>
+              <Text className="text-white font-semibold">重试</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -765,34 +605,19 @@ export default function UtilityReadingListScreen() {
             {readings.length > 0 ? (
               readings.map(renderReadingCard)
             ) : (
-              <View style={{
-                backgroundColor: 'white',
-                borderRadius: 12,
-                padding: 40,
-                alignItems: 'center',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 3
-              }}>
-                <Text style={{ fontSize: 48, marginBottom: 16 }}>📊</Text>
-                <Text style={{ fontSize: 18, fontWeight: '600', color: '#374151', marginBottom: 8 }}>
+              <View className="bg-white rounded-xl p-10 items-center shadow-sm">
+                <Text className="text-5xl mb-4">📊</Text>
+                <Text className="text-lg font-semibold text-gray-700 mb-2">
                   暂无抄表记录
                 </Text>
-                <Text style={{ fontSize: 14, color: '#6b7280', textAlign: 'center', marginBottom: 20 }}>
+                <Text className="text-sm text-gray-500 text-center mb-5">
                   {selectedRoomId ? '该房间暂无抄表记录' : '暂无抄表记录'}
                 </Text>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('CreateUtilityReading', { roomId: selectedRoomId })}
-                  style={{
-                    backgroundColor: '#06B6D4',
-                    paddingHorizontal: 24,
-                    paddingVertical: 12,
-                    borderRadius: 8
-                  }}
+                  className="bg-cyan-500 px-6 py-3 rounded-lg"
                 >
-                  <Text style={{ color: 'white', fontWeight: '600' }}>创建第一条抄表记录</Text>
+                  <Text className="text-white font-semibold">创建第一条抄表记录</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -800,7 +625,7 @@ export default function UtilityReadingListScreen() {
         )}
 
         {/* 底部间距 */}
-        <View style={{ height: 20 }} />
+        <View className="h-5" />
       </ScrollView>
     </View>
   );

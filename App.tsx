@@ -32,22 +32,7 @@ import EstimatedBillEditScreen from './screens/EstimatedBillEdit';
 import BillCanvasScreen from './screens/BillCanvas';
 import { UserProvider } from './contexts/UserContext';
 
-// 导入测试工具（开发环境）
-if (__DEV__) {
-  import('./utils/testBuildingAPI');
-  import('./utils/testTokenManager');
-  import('./utils/testBackendTokenExpiry');
-  import('./utils/authGuard');
-  import('./utils/testAuthProtection');
-  import('./utils/testBuildingRefresh');
-  import('./services/autoLoginService');
-  import('./utils/testAutoLogin');
-  import('./utils/testTokenDelay');
-  import('./utils/testRoomAPI');
-  import('./utils/testUtilityReadingAPI');
-  import('./utils/testFilterFunctionality');
-  import('./utils/testBillAPI');
-}
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
