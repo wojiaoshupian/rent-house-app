@@ -257,8 +257,25 @@ class BillService {
         apiService.get<any>(`${this.baseUrl}/${billId}`).pipe(
           map((response) => {
             console.log('✅ 获取账单详情成功:', response);
+            console.log('📊 API数据中的费用字段:', {
+              rent: response.data.rent,
+              deposit: response.data.deposit,
+              electricityUsage: response.data.electricityUsage,
+              waterUsage: response.data.waterUsage,
+              electricityAmount: response.data.electricityAmount,
+              waterAmount: response.data.waterAmount
+            });
             // 转换API响应为BillDetail格式
-            return this.transformApiBillToBillDetail(response.data);
+            const billDetail = this.transformApiBillToBillDetail(response.data);
+            console.log('🔄 转换后的BillDetail费用字段:', {
+              rent: billDetail.rent,
+              deposit: billDetail.deposit,
+              electricityUsage: billDetail.electricityUsage,
+              waterUsage: billDetail.waterUsage,
+              electricityAmount: billDetail.electricityAmount,
+              waterAmount: billDetail.waterAmount
+            });
+            return billDetail;
           }),
           catchError((error) => {
             console.error('❌ 获取账单详情失败:', error);

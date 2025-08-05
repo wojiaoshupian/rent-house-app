@@ -211,21 +211,96 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
           </View>
         </View>
 
+        {/* 费用明细 */}
+        <View className="bg-white m-4 p-4 rounded-xl shadow-sm">
+          <Text className="text-lg font-semibold text-gray-800 mb-4">费用明细</Text>
+
+          {/* 调试信息 - 开发环境显示 */}
+          {__DEV__ && (
+            <View className="bg-yellow-100 p-2 mb-4 rounded">
+              <Text className="text-xs text-gray-600">调试信息:</Text>
+              <Text className="text-xs text-gray-600">rent: {bill.rent}</Text>
+              <Text className="text-xs text-gray-600">deposit: {bill.deposit}</Text>
+              <Text className="text-xs text-gray-600">electricityUsage: {bill.electricityUsage}</Text>
+              <Text className="text-xs text-gray-600">waterUsage: {bill.waterUsage}</Text>
+            </View>
+          )}
+
+          <View className="space-y-3">
+            {bill.rent && bill.rent > 0 && (
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">房租</Text>
+                <Text className="text-gray-800 font-medium">{formatAmount(bill.rent)}</Text>
+              </View>
+            )}
+
+            {bill.deposit && bill.deposit > 0 && (
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">押金</Text>
+                <Text className="text-gray-800 font-medium">{formatAmount(bill.deposit)}</Text>
+              </View>
+            )}
+
+            {bill.electricityUsage && bill.electricityUsage > 0 && (
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">电费 ({bill.electricityUsage} 度)</Text>
+                <Text className="text-gray-800 font-medium">
+                  {formatAmount(bill.electricityAmount || (bill.electricityUsage * (bill.room?.electricityUnitPrice || 0)))}
+                </Text>
+              </View>
+            )}
+
+            {bill.waterUsage && bill.waterUsage > 0 && (
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">水费 ({bill.waterUsage} 吨)</Text>
+                <Text className="text-gray-800 font-medium">
+                  {formatAmount(bill.waterAmount || (bill.waterUsage * (bill.room?.waterUnitPrice || 0)))}
+                </Text>
+              </View>
+            )}
+
+            {bill.hotWaterUsage && bill.hotWaterUsage > 0 && (
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">热水费 ({bill.hotWaterUsage} 吨)</Text>
+                <Text className="text-gray-800 font-medium">
+                  {formatAmount(bill.hotWaterAmount || (bill.hotWaterUsage * (bill.room?.hotWaterUnitPrice || 0)))}
+                </Text>
+              </View>
+            )}
+
+            {bill.otherFees && bill.otherFees > 0 && (
+              <View className="flex-row justify-between">
+                <Text className="text-gray-600">
+                  其他费用{bill.otherFeesDescription ? ` (${bill.otherFeesDescription})` : ''}
+                </Text>
+                <Text className="text-gray-800 font-medium">{formatAmount(bill.otherFees)}</Text>
+              </View>
+            )}
+
+            <View className="border-t border-gray-200 pt-3 mt-3">
+              <View className="flex-row justify-between">
+                <Text className="text-lg font-semibold text-gray-800">总计</Text>
+                <Text className="text-lg font-bold text-blue-600">{formatAmount(bill.amount)}</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
         {/* 账单详情 */}
         <View className="bg-white m-4 p-4 rounded-xl shadow-sm">
           <Text className="text-lg font-semibold text-gray-800 mb-4">账单详情</Text>
-          
+
           <View className="space-y-3">
             <View className="flex-row justify-between">
               <Text className="text-gray-600">账单编号</Text>
               <Text className="text-gray-800 font-medium">{bill.billNumber}</Text>
             </View>
-            
+
             <View className="flex-row justify-between">
               <Text className="text-gray-600">账单周期</Text>
               <Text className="text-gray-800 font-medium">{bill.billPeriod}</Text>
             </View>
-            
+
             <View className="flex-row justify-between">
               <Text className="text-gray-600">到期日期</Text>
               <Text className="text-gray-800 font-medium">{formatDate(bill.dueDate)}</Text>

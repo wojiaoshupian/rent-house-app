@@ -33,6 +33,17 @@ const CreateBillScreen: React.FC<CreateBillScreenProps> = () => {
     billPeriod: '',
     dueDate: '',
     notes: '',
+    // 详细费用字段
+    rent: 0,
+    deposit: 0,
+    electricityUsage: 0,
+    waterUsage: 0,
+    hotWaterUsage: 0,
+    electricityAmount: 0,
+    waterAmount: 0,
+    hotWaterAmount: 0,
+    otherFees: 0,
+    otherFeesDescription: '',
   });
 
   // 表单验证错误
@@ -218,14 +229,139 @@ const CreateBillScreen: React.FC<CreateBillScreenProps> = () => {
             {errors.title && <Text className="text-red-500 text-sm mt-1">{errors.title}</Text>}
           </View>
 
-          {/* 账单金额 */}
+          {/* 费用明细 */}
+          <View className="mb-6">
+            <Text className="text-lg font-semibold text-gray-800 mb-4">费用明细</Text>
+
+            {/* 房租 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">房租 (元)</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入房租金额"
+                value={formData.rent?.toString() || ''}
+                onChangeText={(text) => updateFormData('rent', parseFloat(text) || 0)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* 押金 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">押金 (元)</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="请输入押金金额"
+                value={formData.deposit?.toString() || ''}
+                onChangeText={(text) => updateFormData('deposit', parseFloat(text) || 0)}
+                keyboardType="numeric"
+              />
+            </View>
+
+            {/* 电费 */}
+            <View className="mb-4">
+              <View className="flex-row space-x-2">
+                <View className="flex-1">
+                  <Text className="text-sm font-medium text-gray-700 mb-2">用电量 (度)</Text>
+                  <TextInput
+                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="用电量"
+                    value={formData.electricityUsage?.toString() || ''}
+                    onChangeText={(text) => updateFormData('electricityUsage', parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-sm font-medium text-gray-700 mb-2">电费金额 (元)</Text>
+                  <TextInput
+                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="电费金额"
+                    value={formData.electricityAmount?.toString() || ''}
+                    onChangeText={(text) => updateFormData('electricityAmount', parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            {/* 水费 */}
+            <View className="mb-4">
+              <View className="flex-row space-x-2">
+                <View className="flex-1">
+                  <Text className="text-sm font-medium text-gray-700 mb-2">用水量 (吨)</Text>
+                  <TextInput
+                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="用水量"
+                    value={formData.waterUsage?.toString() || ''}
+                    onChangeText={(text) => updateFormData('waterUsage', parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-sm font-medium text-gray-700 mb-2">水费金额 (元)</Text>
+                  <TextInput
+                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="水费金额"
+                    value={formData.waterAmount?.toString() || ''}
+                    onChangeText={(text) => updateFormData('waterAmount', parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            {/* 热水费 */}
+            <View className="mb-4">
+              <View className="flex-row space-x-2">
+                <View className="flex-1">
+                  <Text className="text-sm font-medium text-gray-700 mb-2">热水用量 (吨)</Text>
+                  <TextInput
+                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="热水用量"
+                    value={formData.hotWaterUsage?.toString() || ''}
+                    onChangeText={(text) => updateFormData('hotWaterUsage', parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-sm font-medium text-gray-700 mb-2">热水费金额 (元)</Text>
+                  <TextInput
+                    className="border border-gray-300 rounded-lg px-3 py-2"
+                    placeholder="热水费金额"
+                    value={formData.hotWaterAmount?.toString() || ''}
+                    onChangeText={(text) => updateFormData('hotWaterAmount', parseFloat(text) || 0)}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            {/* 其他费用 */}
+            <View className="mb-4">
+              <Text className="text-sm font-medium text-gray-700 mb-2">其他费用 (元)</Text>
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2 mb-2"
+                placeholder="其他费用金额"
+                value={formData.otherFees?.toString() || ''}
+                onChangeText={(text) => updateFormData('otherFees', parseFloat(text) || 0)}
+                keyboardType="numeric"
+              />
+              <TextInput
+                className="border border-gray-300 rounded-lg px-3 py-2"
+                placeholder="其他费用说明"
+                value={formData.otherFeesDescription || ''}
+                onChangeText={(text) => updateFormData('otherFeesDescription', text)}
+              />
+            </View>
+          </View>
+
+          {/* 账单总金额 */}
           <View className="mb-4">
-            <Text className="text-sm font-medium text-gray-700 mb-2">账单金额 *</Text>
+            <Text className="text-sm font-medium text-gray-700 mb-2">账单总金额 *</Text>
             <TextInput
               className={`border rounded-lg px-3 py-2 ${
                 errors.amount ? 'border-red-500' : 'border-gray-300'
               }`}
-              placeholder="请输入账单金额"
+              placeholder="请输入账单总金额"
               value={formData.amount.toString()}
               onChangeText={(text) => updateFormData('amount', parseFloat(text) || 0)}
               keyboardType="numeric"

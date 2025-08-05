@@ -676,6 +676,12 @@ const EstimatedBillListScreen: React.FC<EstimatedBillListScreenProps> = () => {
               <Text className="text-sm text-gray-800">{formatAmount(bill.rent)}</Text>
             </View>
           )}
+          {bill.deposit > 0 && (
+            <View className="flex-row justify-between">
+              <Text className="text-sm text-gray-600">押金</Text>
+              <Text className="text-sm text-gray-800">{formatAmount(bill.deposit)}</Text>
+            </View>
+          )}
           {bill.electricityAmount > 0 && (
             <View>
               <View className="flex-row justify-between">
