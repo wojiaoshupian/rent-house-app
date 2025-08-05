@@ -15,11 +15,20 @@ export type RootStackParamList = {
   BuildingList: undefined;
   RoomList: { buildingId?: number };
   CreateRoom: { buildingId?: number };
-  RoomDetail: { roomId: number };
   CreateUtilityReading: { roomId?: number };
   UtilityReadingList: { roomId?: number; buildingId?: number };
   UtilityReadingDetail: { readingId: number };
   EditUtilityReading: { readingId: number };
+
+  // 账单相关
+  BillList: { roomId?: number; buildingId?: number };
+  BillDetail: { billId: number };
+  CreateBill: { roomId?: number };
+  EditBill: { billId: number };
+
+  // 预估账单相关
+  EstimatedBillList: { roomId?: number; buildingId?: number };
+  EstimatedBillDetail: { billId: number };
 };
 
 export type RootNavigatorParamList = RootStackParamList;

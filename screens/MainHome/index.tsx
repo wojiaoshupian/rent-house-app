@@ -37,14 +37,6 @@ export const MainHomeScreen = () => {
     },
     {
       id: 4,
-      title: '租户管理',
-      description: '管理租户信息',
-      icon: '👥',
-      color: '#F59E0B',
-      route: 'Home' as const, // 暂时跳转到Home，后续可以添加租户管理页面
-    },
-    {
-      id: 5,
       title: '抄水电表',
       description: '管理房间水电表记录',
       icon: '📊',
@@ -52,15 +44,15 @@ export const MainHomeScreen = () => {
       route: 'UtilityReadingList' as const,
     },
     {
-      id: 6,
-      title: '收费管理',
-      description: '水电费收费管理',
-      icon: '💰',
+      id: 5,
+      title: '预估账单',
+      description: '查看和管理预估账单',
+      icon: '�',
       color: '#EF4444',
-      route: 'Home' as const, // 暂时跳转到Home，后续可以添加收费管理页面
+      route: 'EstimatedBillList' as const,
     },
     {
-      id: 7,
+      id: 6,
       title: 'RxJS Subject',
       description: 'Subject 演示和学习',
       icon: '🔄',
@@ -97,6 +89,8 @@ export const MainHomeScreen = () => {
                     navigation.navigate('RoomList', {});
                   } else if (action.route === 'UtilityReadingList') {
                     navigation.navigate('UtilityReadingList', {});
+                  } else if (action.route === 'EstimatedBillList') {
+                    navigation.navigate('EstimatedBillList', {});
                   } else {
                     navigation.navigate(action.route as any);
                   }

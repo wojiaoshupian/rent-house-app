@@ -1,6 +1,6 @@
 import { roomService } from '../services/roomService';
 import { buildingService } from '../services/buildingService';
-import { CreateRoomRequest, UpdateRoomRequest, RoomStatus } from '../types/room';
+import { CreateRoomRequest, UpdateRoomRequest, RentalStatus } from '../types/room';
 
 /**
  * 房间API测试工具
@@ -93,7 +93,13 @@ export class RoomAPITester {
           console.log('  - 租金:', firstRoom.rent, '元/月');
           console.log('  - 押金:', firstRoom.defaultDeposit, '元');
           console.log('  - 楼宇ID:', firstRoom.buildingId);
-          console.log('  - 状态:', firstRoom.status || '未设置');
+          console.log('  - 出租状态:', firstRoom.rentalStatus, '-', firstRoom.rentalStatusDescription);
+          console.log('  - 楼宇名称:', firstRoom.buildingName);
+          console.log('  - 房东姓名:', firstRoom.landlordName);
+          console.log('  - 有效电费单价:', firstRoom.effectiveElectricityUnitPrice, '元/度');
+          console.log('  - 有效水费单价:', firstRoom.effectiveWaterUnitPrice, '元/吨');
+          console.log('  - 有效热水单价:', firstRoom.effectiveHotWaterUnitPrice, '元/吨');
+          console.log('  - 创建者:', firstRoom.createdByUsername);
           console.log('  - 创建时间:', firstRoom.createdAt);
         } else {
           console.log('📝 当前没有房间');
@@ -223,6 +229,44 @@ export class RoomAPITester {
   }
 
   /**
+   * 测试更新房间出租状态
+   */
+  static testUpdateRoomRentalStatus(roomId?: number, status?: RentalStatus) {
+    console.log('🧪 开始测试更新房间出租状态...');
+    console.log('💡 注意：此接口需要用户登录并调用 PUT /api/rooms/{id}/rental-status');
+
+    const targetRoomId = roomId || 1;
+    const targetStatus = status || RentalStatus.RENTED;
+
+    console.log(`🎯 目标房间ID: ${targetRoomId}, 目标状态: ${targetStatus}`);
+
+    roomService.updateRoomRentalStatus(targetRoomId, targetStatus, '测试更新出租状态').subscribe({
+      next: (room) => {
+        console.log('✅ 更新房间出租状态成功:');
+        console.log('📋 更新后的房间信息:');
+        console.log('  - ID:', room.id);
+        console.log('  - 房间号:', room.roomNumber);
+        console.log('  - 出租状态:', room.rentalStatus, '-', room.rentalStatusDescription);
+        console.log('  - 楼宇名称:', room.buildingName);
+        console.log('  - 房东姓名:', room.landlordName);
+        console.log('  - 更新时间:', room.updatedAt);
+      },
+      error: (error) => {
+        console.error('❌ 更新房间出租状态失败:', error);
+        console.error('📝 错误详情:', error.message);
+
+        if (error.status === 401) {
+          console.log('💡 提示：请先登录后再试');
+        } else if (error.status === 404) {
+          console.log('💡 提示：房间不存在，请检查房间ID');
+        } else if (error.status === 403) {
+          console.log('💡 提示：权限不足，请检查用户权限');
+        }
+      }
+    });
+  }
+
+  /**
    * 测试删除房间
    */
   static testDeleteRoom() {
@@ -282,6 +326,36 @@ export class RoomAPITester {
       },
       error: (error) => {
         console.error('❌ 获取楼宇列表失败:', error);
+      }
+    });
+  }
+
+  /**
+   * 直接删除指定房间ID
+   */
+  static testDeleteRoomById(roomId: number) {
+    console.log('🧪 开始测试删除房间...', `房间ID: ${roomId}`);
+    console.log('💡 注意：此接口需要用户登录并调用 DELETE /api/rooms/{id}');
+
+    roomService.deleteRoom(roomId).subscribe({
+      next: () => {
+        console.log('✅ 删除房间成功:');
+        console.log(`📋 房间ID ${roomId} 已被删除`);
+        console.log('💡 提示：可以调用 testRoomAPI.getList() 验证删除结果');
+      },
+      error: (error) => {
+        console.error('❌ 删除房间失败:', error);
+        console.error('📝 错误详情:', error.message);
+
+        if (error.status === 401) {
+          console.log('💡 提示：请先登录后再试');
+        } else if (error.status === 404) {
+          console.log('💡 提示：房间不存在，请检查房间ID');
+        } else if (error.status === 403) {
+          console.log('💡 提示：权限不足，请检查用户权限');
+        } else if (error.status === 409) {
+          console.log('💡 提示：房间可能有关联数据，无法删除');
+        }
       }
     });
   }
@@ -378,8 +452,14 @@ export const testRoomAPI = {
   // 更新房间
   update: () => RoomAPITester.testUpdateRoom(),
 
+  // 更新房间出租状态
+  updateRentalStatus: (roomId?: number, status?: RentalStatus) => RoomAPITester.testUpdateRoomRentalStatus(roomId, status),
+
   // 删除房间
   delete: () => RoomAPITester.testDeleteRoom(),
+
+  // 直接删除指定房间ID
+  deleteById: (roomId: number) => RoomAPITester.testDeleteRoomById(roomId),
 
   // 搜索房间
   search: (query?: string) => RoomAPITester.testSearchRooms(query),
@@ -401,7 +481,20 @@ if (__DEV__) {
   console.log('  - testRoomAPI.getByBuildingId() // 测试根据楼宇ID获取房间');
   console.log('  - testRoomAPI.create()          // 测试创建房间');
   console.log('  - testRoomAPI.update()          // 测试更新房间');
+  console.log('  - testRoomAPI.updateRentalStatus(roomId, status) // 测试更新房间出租状态');
+  console.log('');
+  console.log('💡 出租状态枚举值:');
+  console.log('  - RentalStatus.VACANT      // 空置');
+  console.log('  - RentalStatus.RENTED      // 已出租');
+  console.log('  - RentalStatus.MAINTENANCE // 维修中');
+  console.log('  - RentalStatus.RESERVED    // 已预订');
+  console.log('');
+  console.log('📝 使用示例:');
+  console.log('  testRoomAPI.updateRentalStatus(1, "RENTED")    // 设为已出租');
+  console.log('  testRoomAPI.updateRentalStatus(1, "VACANT")    // 设为空置');
+  console.log('  testRoomAPI.updateRentalStatus(2, "MAINTENANCE") // 设为维修中');
   console.log('  - testRoomAPI.delete()          // 测试删除房间');
+  console.log('  - testRoomAPI.deleteById(roomId) // 直接删除指定房间ID');
   console.log('  - testRoomAPI.search()          // 测试搜索房间');
   console.log('  - testRoomAPI.all()             // 运行全部测试');
 }

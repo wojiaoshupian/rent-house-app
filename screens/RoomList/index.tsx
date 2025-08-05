@@ -13,7 +13,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/navigation';
 import { roomService } from '../../services/roomService';
 import { buildingService } from '../../services/buildingService';
-import { Room, RoomStatus } from '../../types/room';
+import { billService } from '../../services/billService';
+import { Room, RentalStatus } from '../../types/room';
 import { Building } from '../../types/building';
 import { catchError, of } from 'rxjs';
 
@@ -90,19 +91,19 @@ export default function RoomListScreen() {
     fetchRooms(true);
   };
 
-  // 获取房间状态显示文本和颜色
-  const getRoomStatusDisplay = (status?: RoomStatus) => {
+  // 获取房间出租状态显示文本和颜色
+  const getRentalStatusDisplay = (status: RentalStatus) => {
     switch (status) {
-      case RoomStatus.AVAILABLE:
-        return { text: '可租', color: '#10B981' };
-      case RoomStatus.OCCUPIED:
-        return { text: '已租', color: '#EF4444' };
-      case RoomStatus.MAINTENANCE:
-        return { text: '维修中', color: '#F59E0B' };
-      case RoomStatus.RESERVED:
-        return { text: '预定', color: '#8B5CF6' };
+      case RentalStatus.VACANT:
+        return { text: '空置', color: '#6b7280', icon: '🏠' };
+      case RentalStatus.RENTED:
+        return { text: '已出租', color: '#10b981', icon: '🏡' };
+      case RentalStatus.MAINTENANCE:
+        return { text: '维修中', color: '#f59e0b', icon: '🔧' };
+      case RentalStatus.RESERVED:
+        return { text: '已预订', color: '#3b82f6', icon: '📝' };
       default:
-        return { text: '未知', color: '#6B7280' };
+        return { text: '未知', color: '#6B7280', icon: '❓' };
     }
   };
 
@@ -113,9 +114,160 @@ export default function RoomListScreen() {
     return building ? building.buildingName : '未知楼宇';
   };
 
+  // 更新房间出租状态 - 显示所有状态选项
+  const updateRoomRentalStatus = (roomId: number, currentStatus: RentalStatus) => {
+    const statusOptions = [
+      { label: '🏠 空置', value: RentalStatus.VACANT },
+      { label: '🏡 已出租', value: RentalStatus.RENTED },
+      { label: '🔧 维修中', value: RentalStatus.MAINTENANCE },
+      { label: '📝 已预订', value: RentalStatus.RESERVED },
+    ];
+
+    const buttons = statusOptions
+      .filter(option => option.value !== currentStatus)
+      .map(option => ({
+        text: option.label,
+        onPress: () => handleStatusUpdate(roomId, option.value)
+      }));
+
+    buttons.push({ text: '取消', onPress: () => {}, style: 'cancel' });
+
+    Alert.alert(
+      '更新出租状态',
+      `当前状态：${getRentalStatusDisplay(currentStatus).icon} ${getRentalStatusDisplay(currentStatus).text}\n\n请选择新的出租状态：`,
+      buttons
+    );
+  };
+
+  // 处理状态更新
+  const handleStatusUpdate = (roomId: number, newStatus: RentalStatus) => {
+    Alert.alert(
+      '确认更新',
+      `确定要将房间状态更新为"${getRentalStatusDisplay(newStatus).text}"吗？`,
+      [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '确定',
+          onPress: () => {
+            setLoading(true);
+            roomService.updateRoomRentalStatus(roomId, newStatus).pipe(
+              catchError((error) => {
+                console.error('更新房间出租状态失败:', error);
+                Alert.alert('更新失败', error.message || '更新房间出租状态失败，请重试');
+                return of(null);
+              })
+            ).subscribe({
+              next: (updatedRoom) => {
+                if (updatedRoom) {
+                  console.log('✅ 房间出租状态更新成功:', updatedRoom);
+                  Alert.alert('更新成功', '房间出租状态已更新');
+                  // 刷新房间列表
+                  fetchRooms(true);
+                }
+                setLoading(false);
+              },
+              error: (error) => {
+                console.error('RxJS错误:', error);
+                setLoading(false);
+                Alert.alert('更新失败', '网络请求失败，请检查网络连接');
+              }
+            });
+          }
+        }
+      ]
+    );
+  };
+
+  // 处理删除房间
+  const handleDeleteRoom = (roomId: number, roomNumber: string) => {
+    Alert.alert(
+      '确认删除',
+      `确定要删除房间"${roomNumber}"吗？\n\n⚠️ 此操作不可恢复，请谨慎操作！`,
+      [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '删除',
+          style: 'destructive',
+          onPress: () => {
+            setLoading(true);
+            roomService.deleteRoom(roomId).pipe(
+              catchError((error) => {
+                console.error('删除房间失败:', error);
+                Alert.alert('删除失败', error.message || '删除房间失败，请重试');
+                return of(null);
+              })
+            ).subscribe({
+              next: (result) => {
+                if (result !== null) {
+                  console.log('✅ 房间删除成功:', roomId);
+                  Alert.alert('删除成功', `房间"${roomNumber}"已删除`);
+                  // 刷新房间列表
+                  fetchRooms(true);
+                }
+                setLoading(false);
+              },
+              error: (error) => {
+                console.error('RxJS错误:', error);
+                setLoading(false);
+                Alert.alert('删除失败', '网络请求失败，请检查网络连接');
+              }
+            });
+          }
+        }
+      ]
+    );
+  };
+
+  // 处理生成预估账单
+  const handleGenerateEstimatedBill = (roomId: number, roomNumber: string) => {
+    // 获取当前月份作为默认值
+    const currentDate = new Date();
+    const currentMonth = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+
+    Alert.alert(
+      '生成预估账单',
+      `为房间"${roomNumber}"生成预估账单\n\n默认账单月份：${currentMonth}`,
+      [
+        { text: '取消', style: 'cancel' },
+        {
+          text: '生成',
+          onPress: () => {
+            setLoading(true);
+            billService.generateEstimatedBill(roomId, currentMonth).pipe(
+              catchError((error) => {
+                console.error('生成预估账单失败:', error);
+                Alert.alert('生成失败', error.message || '生成预估账单失败，请重试');
+                return of(null);
+              })
+            ).subscribe({
+              next: (estimatedBill) => {
+                if (estimatedBill) {
+                  console.log('✅ 预估账单生成成功:', estimatedBill);
+                  Alert.alert(
+                    '生成成功',
+                    `房间"${roomNumber}"的${currentMonth}预估账单已生成\n\n总金额：¥${estimatedBill.totalAmount}\n\n您可以在预估账单页面查看详情。`,
+                    [
+                      { text: '确定', onPress: () => {} }
+                    ]
+                  );
+                }
+                setLoading(false);
+              },
+              error: (error) => {
+                console.error('RxJS错误:', error);
+                setLoading(false);
+                Alert.alert('生成失败', '网络请求失败，请检查网络连接');
+              }
+            });
+          }
+        }
+      ]
+    );
+  };
+
   // 渲染房间卡片
   const renderRoomCard = (room: Room) => {
-    const statusDisplay = getRoomStatusDisplay(room.status);
+    const statusDisplay = getRentalStatusDisplay(room.rentalStatus);
     const building = buildings.find(b => b.id === room.buildingId);
 
     return (
@@ -138,26 +290,32 @@ export default function RoomListScreen() {
           <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#1f2937' }}>
             房间 {room.roomNumber}
           </Text>
-          <View style={{
-            backgroundColor: statusDisplay.color,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-            borderRadius: 12
-          }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: statusDisplay.color,
+              paddingHorizontal: 10,
+              paddingVertical: 6,
+              borderRadius: 12,
+              flexDirection: 'row',
+              alignItems: 'center'
+            }}
+            onPress={() => updateRoomRentalStatus(room.id, room.rentalStatus)}
+          >
+            <Text style={{ fontSize: 12, marginRight: 4 }}>
+              {statusDisplay.icon}
+            </Text>
             <Text style={{ color: 'white', fontSize: 12, fontWeight: '600' }}>
               {statusDisplay.text}
             </Text>
-          </View>
+          </TouchableOpacity>
         </View>
 
         {/* 楼宇信息 */}
-        {building && (
-          <View style={{ marginBottom: 8 }}>
-            <Text style={{ fontSize: 14, color: '#6b7280' }}>
-              🏢 {building.buildingName} - {building.landlordName}
-            </Text>
-          </View>
-        )}
+        <View style={{ marginBottom: 8 }}>
+          <Text style={{ fontSize: 14, color: '#6b7280' }}>
+            🏢 {room.buildingName} - {room.landlordName}
+          </Text>
+        </View>
 
         {/* 租金信息 */}
         <View style={{ marginBottom: 8 }}>
@@ -176,50 +334,96 @@ export default function RoomListScreen() {
         {/* 水电费信息 */}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
           <Text style={{ fontSize: 14, color: '#6b7280' }}>
-            ⚡ 电费: ¥{room.electricityUnitPrice}/度
+            ⚡ 电费: ¥{room.effectiveElectricityUnitPrice}/度
           </Text>
           <Text style={{ fontSize: 14, color: '#6b7280' }}>
-            💧 水费: ¥{room.waterUnitPrice}/吨
+            💧 水费: ¥{room.effectiveWaterUnitPrice}/吨
           </Text>
-          {room.hotWaterUnitPrice && (
-            <Text style={{ fontSize: 14, color: '#6b7280' }}>
-              🔥 热水: ¥{room.hotWaterUnitPrice}/吨
-            </Text>
-          )}
+          <Text style={{ fontSize: 14, color: '#6b7280' }}>
+            🔥 热水: ¥{room.effectiveHotWaterUnitPrice}/吨
+          </Text>
         </View>
 
-        {/* 操作按钮 */}
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#3b82f6',
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              borderRadius: 8,
-              flex: 1,
-              marginRight: 8
-            }}
-            onPress={() => navigation.navigate('RoomDetail', { roomId: room.id })}
-          >
-            <Text style={{ color: 'white', fontSize: 14, fontWeight: '600', textAlign: 'center' }}>
-              查看详情
-            </Text>
-          </TouchableOpacity>
+        {/* 创建者信息 */}
+        <View style={{ marginBottom: 12 }}>
+          <Text style={{ fontSize: 12, color: '#9ca3af' }}>
+            👤 创建者: {room.createdByUsername} | 创建时间: {new Date(room.createdAt).toLocaleDateString()}
+          </Text>
+        </View>
 
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#10b981',
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              borderRadius: 8,
-              flex: 1,
-              marginRight: 8
-            }}
-          >
-            <Text style={{ color: 'white', fontSize: 14, fontWeight: '600', textAlign: 'center' }}>
-              编辑
+        {/* 出租状态快捷操作按钮 */}
+        <View style={{ marginBottom: 12 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#374151' }}>
+              快速更新状态：
             </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#8b5cf6',
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 12,
+                flexDirection: 'row',
+                alignItems: 'center'
+              }}
+              onPress={() => updateRoomRentalStatus(room.id, room.rentalStatus)}
+            >
+              <Text style={{ fontSize: 10, marginRight: 2 }}>⚙️</Text>
+              <Text style={{ color: 'white', fontSize: 10, fontWeight: '600' }}>
+                更多选项
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {[
+              { status: RentalStatus.VACANT, label: '空置', color: '#6b7280', icon: '🏠' },
+              { status: RentalStatus.RENTED, label: '已出租', color: '#10b981', icon: '🏡' },
+              { status: RentalStatus.MAINTENANCE, label: '维修中', color: '#f59e0b', icon: '🔧' },
+              { status: RentalStatus.RESERVED, label: '已预订', color: '#3b82f6', icon: '📝' },
+            ].filter(item => item.status !== room.rentalStatus).map((item) => (
+              <TouchableOpacity
+                key={item.status}
+                style={{
+                  backgroundColor: item.color,
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 16,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  opacity: 0.9
+                }}
+                onPress={() => handleStatusUpdate(room.id, item.status)}
+              >
+                <Text style={{ fontSize: 12, marginRight: 4 }}>
+                  {item.icon}
+                </Text>
+                <Text style={{ color: 'white', fontSize: 12, fontWeight: '600' }}>
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* 其他操作按钮 */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 8 }}>
+          {/* 如果是已出租状态，显示生成预估账单按钮 */}
+          {room.rentalStatus === RentalStatus.RENTED && (
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#3b82f6',
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                borderRadius: 8,
+                flex: 1
+              }}
+              onPress={() => handleGenerateEstimatedBill(room.id, room.roomNumber)}
+            >
+              <Text style={{ color: 'white', fontSize: 14, fontWeight: '600', textAlign: 'center' }}>
+                📊 生成账单
+              </Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             style={{
@@ -227,11 +431,13 @@ export default function RoomListScreen() {
               paddingHorizontal: 16,
               paddingVertical: 8,
               borderRadius: 8,
-              flex: 1
+              flex: room.rentalStatus === RentalStatus.RENTED ? 1 : 2,
+              maxWidth: room.rentalStatus === RentalStatus.RENTED ? undefined : 120
             }}
+            onPress={() => handleDeleteRoom(room.id, room.roomNumber)}
           >
             <Text style={{ color: 'white', fontSize: 14, fontWeight: '600', textAlign: 'center' }}>
-              删除
+              🗑️ 删除
             </Text>
           </TouchableOpacity>
         </View>

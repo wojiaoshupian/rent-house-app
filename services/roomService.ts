@@ -6,11 +6,12 @@ import {
   Room,
   CreateRoomRequest,
   UpdateRoomRequest,
+  UpdateRoomRentalStatusRequest,
   RoomListParams,
   RoomStats,
   RoomDetail,
   RoomSearchResult,
-  RoomStatus
+  RentalStatus
 } from '../types/room';
 
 /**
@@ -302,12 +303,58 @@ class RoomService {
   }
 
   /**
-   * 更新房间状态（需要认证）
+   * 更新房间出租状态（需要认证）
    */
-  updateRoomStatus(roomId: number, status: RoomStatus): Observable<Room> {
-    console.log('🔄 更新房间状态:', roomId, '→', status);
+  updateRoomRentalStatus(roomId: number, rentalStatus: RentalStatus, reason?: string): Observable<Room> {
+    console.log('🔄 更新房间出租状态:', roomId, '→', rentalStatus);
 
-    return this.updateRoom({ id: roomId, status });
+    // 先检查认证状态
+    return new Observable(subscriber => {
+      AuthGuard.isAuthenticated().then(isAuth => {
+        if (!isAuth) {
+          console.error('🚫 用户未认证，无法更新房间状态');
+          subscriber.error(new Error('用户未登录，请先登录后再更新房间状态'));
+          return;
+        }
+
+        // 认证通过，执行API调用
+        const updateData: UpdateRoomRentalStatusRequest = {
+          id: roomId,
+          rentalStatus,
+          reason
+        };
+
+        apiService.put<Room>(`${this.baseUrl}/${roomId}/rental-status`, updateData).pipe(
+          map((response) => {
+            console.log('✅ 房间出租状态更新成功:', response);
+            return response.data;
+          }),
+          catchError((error) => {
+            console.error('❌ 更新房间出租状态失败:', error);
+
+            // 如果是认证错误，提供更明确的错误信息
+            if (error.status === 401) {
+              error.message = '登录已过期，请重新登录后再试';
+            } else if (error.status === 403) {
+              error.message = '权限不足，无法更新房间状态';
+            } else if (error.status === 404) {
+              error.message = '房间不存在或已被删除';
+            } else if (!error.message) {
+              error.message = '更新房间出租状态失败，请重试';
+            }
+
+            return throwError(() => error);
+          })
+        ).subscribe({
+          next: (room) => subscriber.next(room),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
+      }).catch(error => {
+        console.error('🚫 认证检查失败:', error);
+        subscriber.error(new Error('认证检查失败，请重试'));
+      });
+    });
   }
 }
 

@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { MainTabNavigator, TokenStatusMonitor } from './components';
+import { HomeScreen } from './screens/Home';
 import { ZustandDemoScreen } from './screens/ZustandDemo';
 import { RxJSDemoScreen } from './screens/RxJSDemo';
 import { SubjectDemoScreen } from './screens/SubjectDemo';
@@ -18,11 +19,15 @@ import { CreateBuildingScreen } from './screens/CreateBuilding';
 import { BuildingListScreen } from './screens/BuildingList';
 import RoomListScreen from './screens/RoomList';
 import CreateRoomScreen from './screens/CreateRoom';
-import RoomDetailScreen from './screens/RoomDetail';
 import CreateUtilityReadingScreen from './screens/CreateUtilityReading';
 import UtilityReadingListScreen from './screens/UtilityReadingList';
 import UtilityReadingDetailScreen from './screens/UtilityReadingDetail';
 import EditUtilityReadingScreen from './screens/EditUtilityReading';
+import BillListScreen from './screens/BillList';
+import BillDetailScreen from './screens/BillDetail';
+import CreateBillScreen from './screens/CreateBill';
+import EditBillScreen from './screens/EditBill';
+import EstimatedBillListScreen from './screens/EstimatedBillList';
 import { UserProvider } from './contexts/UserContext';
 
 // 导入测试工具（开发环境）
@@ -39,6 +44,7 @@ if (__DEV__) {
   import('./utils/testRoomAPI');
   import('./utils/testUtilityReadingAPI');
   import('./utils/testFilterFunctionality');
+  import('./utils/testBillAPI');
 }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -60,6 +66,11 @@ export default function App() {
               },
             }}>
             <Stack.Screen name="Main" component={MainTabNavigator} options={{ headerShown: false }} />
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ title: '库集成演示' }}
+            />
             <Stack.Screen
               name="ZustandDemo"
               component={ZustandDemoScreen}
@@ -120,11 +131,7 @@ export default function App() {
               component={CreateRoomScreen}
               options={{ title: '创建房间' }}
             />
-            <Stack.Screen
-              name="RoomDetail"
-              component={RoomDetailScreen}
-              options={{ title: '房间详情' }}
-            />
+
             <Stack.Screen
               name="CreateUtilityReading"
               component={CreateUtilityReadingScreen}
@@ -144,6 +151,31 @@ export default function App() {
               name="EditUtilityReading"
               component={EditUtilityReadingScreen}
               options={{ title: '编辑抄表记录' }}
+            />
+            <Stack.Screen
+              name="BillList"
+              component={BillListScreen}
+              options={{ title: '账单列表' }}
+            />
+            <Stack.Screen
+              name="BillDetail"
+              component={BillDetailScreen}
+              options={{ title: '账单详情' }}
+            />
+            <Stack.Screen
+              name="CreateBill"
+              component={CreateBillScreen}
+              options={{ title: '创建账单' }}
+            />
+            <Stack.Screen
+              name="EditBill"
+              component={EditBillScreen}
+              options={{ title: '编辑账单' }}
+            />
+            <Stack.Screen
+              name="EstimatedBillList"
+              component={EstimatedBillListScreen}
+              options={{ title: '预估账单' }}
             />
           </Stack.Navigator>
           <StatusBar style="auto" />
