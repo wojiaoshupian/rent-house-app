@@ -331,7 +331,7 @@ class BillAPITester {
 
     console.log('🧪 测试生成预估账单...');
     console.log('🎯 房间ID:', roomId, '账单月份:', targetBillMonth);
-    console.log('💡 注意：此接口需要用户登录并调用 POST /api/estimated-bills/generate');
+    console.log('💡 注意：此接口需要用户登录并调用 POST /api/bills/generate');
 
     try {
       const result = await billService.generateEstimatedBill(roomId, targetBillMonth).toPromise();
@@ -377,7 +377,7 @@ class BillAPITester {
   async testDeleteEstimatedBill(billId: number) {
     console.log('🧪 测试删除预估账单...');
     console.log('🎯 预估账单ID:', billId);
-    console.log('💡 注意：此接口需要用户登录并调用 DELETE /api/estimated-bills/{id}');
+    console.log('💡 注意：此接口需要用户登录并调用 DELETE /api/bills/{id}');
 
     try {
       await billService.deleteEstimatedBill(billId).toPromise();
@@ -402,6 +402,138 @@ class BillAPITester {
 
       throw error;
     }
+  }
+
+  /**
+   * 测试更新预估账单
+   */
+  async testUpdateEstimatedBill(billId: number, updateData?: any) {
+    const defaultUpdateData = {
+      rent: 1600.00,
+      deposit: 800.00,
+      electricityUsage: 125.5,
+      waterUsage: 18.2,
+      hotWaterUsage: 9.5,
+      otherFees: 150.00,
+      otherFeesDescription: "网络费60元 + 清洁费90元",
+      billStatus: "CONFIRMED",
+      notes: "账单已更新并确认"
+    };
+
+    const finalUpdateData = updateData || defaultUpdateData;
+
+    console.log('🧪 测试更新预估账单...');
+    console.log('🎯 预估账单ID:', billId);
+    console.log('📝 更新数据:', finalUpdateData);
+    console.log('💡 注意：此接口需要用户登录并调用 PUT /api/bills/{id}');
+
+    try {
+      const result = await billService.updateEstimatedBill(billId, finalUpdateData).toPromise();
+
+      console.log('✅ 更新预估账单成功:', result);
+      console.log('📋 更新后的预估账单详情:');
+      console.log('  - ID:', result.id);
+      console.log('  - 房间号:', result.roomNumber);
+      console.log('  - 楼宇名称:', result.buildingName);
+      console.log('  - 账单月份:', result.billMonth);
+      console.log('  - 房租:', result.rent, '元');
+      console.log('  - 电费用量:', result.electricityUsage, '度');
+      console.log('  - 水费用量:', result.waterUsage, '吨');
+      console.log('  - 热水用量:', result.hotWaterUsage, '吨');
+      console.log('  - 其他费用:', result.otherFees, '元');
+      console.log('  - 其他费用说明:', result.otherFeesDescription);
+      console.log('  - 总金额:', result.totalAmount, '元');
+      console.log('  - 状态:', result.billStatus, '-', result.billStatusDescription);
+      console.log('  - 备注:', result.notes);
+      console.log('  - 更新时间:', result.updatedAt);
+
+      return result;
+    } catch (error: any) {
+      console.error('❌ 更新预估账单失败:', error);
+      console.error('📝 错误详情:', error.message);
+
+      if (error.status === 401) {
+        console.log('💡 提示：请先登录后再试');
+      } else if (error.status === 404) {
+        console.log('💡 提示：预估账单不存在或已被删除');
+      } else if (error.status === 409) {
+        console.log('💡 提示：账单状态冲突，无法更新');
+      } else if (error.status === 400) {
+        console.log('💡 提示：请求参数错误，请检查输入数据');
+      } else if (error.status === 403) {
+        console.log('💡 提示：权限不足，请检查用户权限');
+      }
+
+      throw error;
+    }
+  }
+
+  /**
+   * 测试更新预估账单 - 只更新房租
+   */
+  async testUpdateBillRent(billId: number, newRent: number = 1800.00) {
+    console.log('🧪 测试更新预估账单房租...');
+    console.log('🎯 预估账单ID:', billId, '新房租:', newRent);
+
+    return this.testUpdateEstimatedBill(billId, {
+      rent: newRent,
+      notes: `房租已调整为¥${newRent.toFixed(2)}`
+    });
+  }
+
+  /**
+   * 测试更新预估账单 - 只更新杂项费用
+   */
+  async testUpdateBillOtherFees(billId: number, amount: number = 200.00, description: string = "网络费100元 + 清洁费100元") {
+    console.log('🧪 测试更新预估账单杂项费用...');
+    console.log('🎯 预估账单ID:', billId, '杂项费用:', amount, '说明:', description);
+
+    return this.testUpdateEstimatedBill(billId, {
+      otherFees: amount,
+      otherFeesDescription: description,
+      notes: `杂项费用已更新：${description}`
+    });
+  }
+
+  /**
+   * 测试更新预估账单 - 只更新用量
+   */
+  async testUpdateBillUsage(billId: number, electricityUsage: number = 150.0, waterUsage: number = 25.0, hotWaterUsage: number = 12.0) {
+    console.log('🧪 测试更新预估账单用量...');
+    console.log('🎯 预估账单ID:', billId);
+    console.log('⚡ 电费用量:', electricityUsage, '度');
+    console.log('💧 水费用量:', waterUsage, '吨');
+    console.log('🔥 热水用量:', hotWaterUsage, '吨');
+
+    return this.testUpdateEstimatedBill(billId, {
+      electricityUsage,
+      waterUsage,
+      hotWaterUsage,
+      notes: `用量已更新：电${electricityUsage}度，水${waterUsage}吨，热水${hotWaterUsage}吨`
+    });
+  }
+
+  /**
+   * 测试更新预估账单 - 只更新状态
+   */
+  async testUpdateBillStatus(billId: number, newStatus: string = "CONFIRMED") {
+    console.log('🧪 测试更新预估账单状态...');
+    console.log('🎯 预估账单ID:', billId, '新状态:', newStatus);
+
+    return this.testUpdateEstimatedBill(billId, {
+      billStatus: newStatus,
+      notes: `账单状态已更新为${newStatus}`
+    });
+  }
+
+  /**
+   * 测试更新预估账单 - 只更新备注
+   */
+  async testUpdateBillNotes(billId: number, notes: string = "账单信息已手动验证和更新") {
+    console.log('🧪 测试更新预估账单备注...');
+    console.log('🎯 预估账单ID:', billId, '新备注:', notes);
+
+    return this.testUpdateEstimatedBill(billId, { notes });
   }
 
   /**
@@ -474,7 +606,11 @@ class BillAPITester {
       await this.testGenerateEstimatedBill(1);
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // 9. 测试删除预估账单（注意：这会删除刚生成的账单）
+      // 9. 测试更新预估账单（注意：需要先有预估账单）
+      // await this.testUpdateEstimatedBill(1); // 取消注释以测试更新功能
+      // await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 10. 测试删除预估账单（注意：这会删除刚生成的账单）
       // await this.testDeleteEstimatedBill(1); // 取消注释以测试删除功能
       // await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -522,15 +658,32 @@ if (__DEV__ && typeof window !== 'undefined') {
   console.log('   window.testBillAPI.testGetEstimatedBillsByRoomId(roomId) - 测试获取房间预估账单');
   console.log('   window.testBillAPI.testGetEstimatedBillsByStatus(status) - 测试获取状态预估账单');
   console.log('   window.testBillAPI.testGenerateEstimatedBill(roomId, billMonth) - 测试生成预估账单');
+  console.log('   window.testBillAPI.testUpdateEstimatedBill(billId, updateData) - 测试更新预估账单');
+  console.log('   window.testBillAPI.testUpdateBillRent(billId, newRent) - 测试更新房租');
+  console.log('   window.testBillAPI.testUpdateBillOtherFees(billId, amount, description) - 测试更新杂项费用');
+  console.log('   window.testBillAPI.testUpdateBillUsage(billId, electricity, water, hotWater) - 测试更新用量');
+  console.log('   window.testBillAPI.testUpdateBillStatus(billId, status) - 测试更新状态');
+  console.log('   window.testBillAPI.testUpdateBillNotes(billId, notes) - 测试更新备注');
   console.log('   window.testBillAPI.testDeleteEstimatedBill(billId) - 测试删除预估账单');
   console.log('   window.testBillAPI.runAllTests() - 运行所有测试');
   console.log('');
   console.log('💡 预估账单操作示例:');
   console.log('   window.testBillAPI.testGenerateEstimatedBill(1, "2025-08") - 为房间1生成2025年8月预估账单');
-  console.log('   window.testBillAPI.testGenerateEstimatedBill(2) - 为房间2生成当前月份预估账单');
-  console.log('   window.testBillAPI.testDeleteEstimatedBill(123) - 删除ID为123的预估账单');
+  console.log('   window.testBillAPI.testUpdateBillRent(123, 2000) - 更新账单123的房租为2000元');
+  console.log('   window.testBillAPI.testUpdateBillOtherFees(123, 300, "网络费150 + 清洁费150") - 更新杂项费用');
+  console.log('   window.testBillAPI.testUpdateBillUsage(123, 180, 30, 15) - 更新用量数据');
+  console.log('   window.testBillAPI.testUpdateBillStatus(123, "CONFIRMED") - 确认账单');
+  console.log('   window.testBillAPI.testUpdateBillNotes(123, "已手动核实") - 更新备注');
+  console.log('   window.testBillAPI.testDeleteEstimatedBill(123) - 删除预估账单');
   console.log('');
-  console.log('⚠️  注意：删除预估账单操作不可恢复，请谨慎使用！');
+  console.log('📱 UI操作说明:');
+  console.log('   1. 在预估账单列表页面点击"✏️ 编辑"按钮');
+  console.log('   2. 在弹出的表单中一次性编辑所有字段');
+  console.log('   3. 支持编辑：房租、押金、用量、杂项费用、状态、备注');
+  console.log('   4. 点击"保存"提交更新，点击"取消"放弃修改');
+  console.log('   5. 点击"🔄 重置为原始值"恢复到编辑前的数据');
+  console.log('');
+  console.log('⚠️  注意：更新和删除预估账单操作请谨慎使用！');
 }
 
 export default billAPITester;

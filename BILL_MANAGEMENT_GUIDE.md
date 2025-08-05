@@ -140,7 +140,7 @@ Authorization: Bearer {token}
 
 #### 获取预估账单列表
 ```typescript
-GET /api/estimated-bills?roomId=1&billMonth=2025-08&billStatus=GENERATED&page=0&size=10
+GET /api/bills?roomId=1&billMonth=2025-08&billStatus=GENERATED&page=0&size=10
 Authorization: Bearer {token}
 
 // 响应示例

@@ -527,7 +527,7 @@ class BillService {
         }
 
         // 认证通过，执行API调用
-        apiService.get<EstimatedBill[]>('/api/estimated-bills', { params }).pipe(
+        apiService.get<EstimatedBill[]>('/api/bills', { params }).pipe(
           map((response: any) => {
             console.log('✅ 获取预估账单成功:', response);
             console.log('📊 预估账单数量:', response.data.length);
@@ -607,7 +607,7 @@ class BillService {
         const params = { roomId, billMonth };
 
         // 认证通过，执行API调用
-        apiService.post<EstimatedBill>('/api/estimated-bills/generate', null, { params }).pipe(
+        apiService.post<EstimatedBill>('/api/bills/generate', null, { params }).pipe(
           map((response) => {
             console.log('✅ 生成预估账单成功:', response);
             return response.data;
@@ -659,7 +659,7 @@ class BillService {
         }
 
         // 认证通过，执行API调用
-        apiService.delete<void>(`/api/estimated-bills/${billId}`).pipe(
+        apiService.delete<void>(`/api/bills/${billId}`).pipe(
           map(() => {
             console.log('✅ 删除预估账单成功');
             return undefined;
@@ -677,6 +677,68 @@ class BillService {
               error.message = '预估账单已确认，无法删除';
             } else if (!error.message) {
               error.message = '删除预估账单失败，请重试';
+            }
+
+            return throwError(() => error);
+          })
+        ).subscribe({
+          next: (result) => subscriber.next(result),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
+      }).catch(error => {
+        console.error('❌ 认证检查失败:', error);
+        subscriber.error(new Error('认证检查失败，请重试'));
+      });
+    });
+  }
+
+  /**
+   * 更新预估账单（需要认证）
+   */
+  updateEstimatedBill(billId: number, updateData: {
+    rent?: number;
+    deposit?: number;
+    electricityUsage?: number;
+    waterUsage?: number;
+    hotWaterUsage?: number;
+    otherFees?: number;
+    otherFeesDescription?: string;
+    billStatus?: string;
+    notes?: string;
+  }): Observable<EstimatedBill> {
+    console.log('✏️ 更新预估账单:', billId, updateData);
+
+    // 先检查认证状态
+    return new Observable(subscriber => {
+      AuthGuard.isAuthenticated().then(isAuth => {
+        if (!isAuth) {
+          console.error('🚫 用户未认证，无法更新预估账单');
+          subscriber.error(new Error('用户未登录，请先登录后再更新预估账单'));
+          return;
+        }
+
+        // 认证通过，执行API调用
+        apiService.put<EstimatedBill>(`/api/bills/${billId}`, updateData).pipe(
+          map((response) => {
+            console.log('✅ 更新预估账单成功:', response);
+            return response.data;
+          }),
+          catchError((error) => {
+            console.error('❌ 更新预估账单失败:', error);
+
+            if (error.status === 401) {
+              error.message = '登录已过期，请重新登录后再试';
+            } else if (error.status === 403) {
+              error.message = '权限不足，无法更新预估账单';
+            } else if (error.status === 404) {
+              error.message = '预估账单不存在或已被删除';
+            } else if (error.status === 400) {
+              error.message = error.message || '请求参数错误，请检查输入数据';
+            } else if (error.status === 409) {
+              error.message = '账单状态冲突，无法更新';
+            } else if (!error.message) {
+              error.message = '更新预估账单失败，请重试';
             }
 
             return throwError(() => error);
