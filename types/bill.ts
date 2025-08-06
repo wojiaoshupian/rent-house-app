@@ -423,14 +423,10 @@ export const PAYMENT_METHOD_OPTIONS = [
   { value: PaymentMethod.OTHER, label: '其他方式', icon: '💳' },
 ] as const;
 
-// 预估账单状态选项
+// 预估账单状态选项 - 只保留已生成和已确认状态
 export const ESTIMATED_BILL_STATUS_OPTIONS = [
   { value: EstimatedBillStatus.GENERATED, label: '已生成', color: '#3b82f6' },
   { value: EstimatedBillStatus.CONFIRMED, label: '已确认', color: '#10b981' },
-  { value: EstimatedBillStatus.SENT, label: '已发送', color: '#8b5cf6' },
-  { value: EstimatedBillStatus.PAID, label: '已支付', color: '#10b981' },
-  { value: EstimatedBillStatus.OVERDUE, label: '已逾期', color: '#ef4444' },
-  { value: EstimatedBillStatus.CANCELLED, label: '已取消', color: '#6b7280' },
 ] as const;
 
 export default Bill;

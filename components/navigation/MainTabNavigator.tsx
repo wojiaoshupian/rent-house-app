@@ -18,8 +18,8 @@ export const MainTabNavigator = () => {
     },
     {
       key: 'usage',
-      title: '使用',
-      icon: '📖',
+      title: '指南',
+      icon: '📚',
       badge: 0,
     },
    

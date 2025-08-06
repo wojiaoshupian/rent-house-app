@@ -33,6 +33,7 @@ export const BuildingListScreen = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingBuilding, setEditingBuilding] = useState<Building | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showOperationGuide, setShowOperationGuide] = useState(false);
   const [editForm, setEditForm] = useState({
     buildingName: '',
     landlordName: '',
@@ -339,6 +340,71 @@ export const BuildingListScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
+      </View>
+
+      {/* 操作说明 */}
+      <View className="bg-blue-50 px-6 py-3 border-b border-blue-100">
+        <TouchableOpacity
+          onPress={() => setShowOperationGuide(!showOperationGuide)}
+          className="flex-row items-center justify-between"
+        >
+          <View className="flex-row items-center">
+            <Text className="text-base font-semibold text-blue-700 mr-2">
+              📖 操作说明
+            </Text>
+          </View>
+          <Text className="text-base text-blue-600">
+            {showOperationGuide ? '▲' : '▼'}
+          </Text>
+        </TouchableOpacity>
+
+        {showOperationGuide && (
+          <View className="mt-3 bg-white rounded-lg p-4 border border-blue-200">
+            <Text className="text-sm font-semibold text-gray-800 mb-2">🏢 楼宇管理操作指南</Text>
+
+            <View className="mb-3">
+              <Text className="text-sm font-medium text-gray-700 mb-1">➕ 新建楼宇：</Text>
+              <Text className="text-xs text-gray-600 leading-4 ml-2">
+                • 点击右上角"+ 新建"按钮创建新楼宇{'\n'}
+                • 填写楼宇名称、房东信息和费用标准{'\n'}
+                • 设置电费、水费、热水费单价
+              </Text>
+            </View>
+
+            <View className="mb-3">
+              <Text className="text-sm font-medium text-gray-700 mb-1">✏️ 编辑楼宇：</Text>
+              <Text className="text-xs text-gray-600 leading-4 ml-2">
+                • 点击楼宇卡片中的"编辑"按钮{'\n'}
+                • 修改楼宇基本信息和费用标准{'\n'}
+                • 保存后立即生效
+              </Text>
+            </View>
+
+            <View className="mb-3">
+              <Text className="text-sm font-medium text-gray-700 mb-1">🏠 管理房间：</Text>
+              <Text className="text-xs text-gray-600 leading-4 ml-2">
+                • 点击"查看房间"按钮进入房间管理{'\n'}
+                • 可查看该楼宇下的所有房间{'\n'}
+                • 支持新建、编辑房间信息
+              </Text>
+            </View>
+
+            <View className="mb-2">
+              <Text className="text-sm font-medium text-gray-700 mb-1">🗑️ 删除楼宇：</Text>
+              <Text className="text-xs text-gray-600 leading-4 ml-2">
+                • 点击"删除"按钮移除楼宇{'\n'}
+                • 删除前会确认操作{'\n'}
+                • 注意：删除楼宇会同时删除其下所有房间
+              </Text>
+            </View>
+
+            <View className="bg-yellow-50 p-2 rounded border border-yellow-200 mt-2">
+              <Text className="text-xs text-yellow-800">
+                💡 提示：建议先创建楼宇，再添加房间，最后进行抄表管理
+              </Text>
+            </View>
+          </View>
+        )}
       </View>
 
       {/* 内容区域 */}

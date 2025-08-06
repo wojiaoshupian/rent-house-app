@@ -38,14 +38,10 @@ export const EstimatedBillEditForm: React.FC<EstimatedBillEditFormProps> = ({
     notes: bill.notes || ''
   });
 
-  // 状态选项
+  // 状态选项 - 只保留已生成和已确认
   const statusOptions = [
     { label: '已生成', value: 'GENERATED' },
-    { label: '已确认', value: 'CONFIRMED' },
-    { label: '已发送', value: 'SENT' },
-    { label: '已支付', value: 'PAID' },
-    { label: '已逾期', value: 'OVERDUE' },
-    { label: '已取消', value: 'CANCELLED' }
+    { label: '已确认', value: 'CONFIRMED' }
   ];
 
   // 更新表单数据

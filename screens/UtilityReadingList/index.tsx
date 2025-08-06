@@ -42,6 +42,7 @@ export default function UtilityReadingListScreen() {
   const [selectedBuildingId, setSelectedBuildingId] = useState<number | undefined>(params?.buildingId);
   const [showBuildingFilter, setShowBuildingFilter] = useState(false);
   const [showRoomFilter, setShowRoomFilter] = useState(false);
+  const [showOperationGuide, setShowOperationGuide] = useState(false);
 
   // 组件挂载时获取数据
   useEffect(() => {
@@ -402,6 +403,72 @@ export default function UtilityReadingListScreen() {
 
 
 
+
+      {/* 操作说明 */}
+      <View className="bg-blue-50 px-5 py-3 border-b border-blue-100">
+        <TouchableOpacity
+          onPress={() => setShowOperationGuide(!showOperationGuide)}
+          className="flex-row items-center justify-between"
+        >
+          <View className="flex-row items-center">
+            <Text className="text-base font-semibold text-blue-700 mr-2">
+              📖 操作说明
+            </Text>
+          </View>
+          <Text className="text-base text-blue-600">
+            {showOperationGuide ? '▲' : '▼'}
+          </Text>
+        </TouchableOpacity>
+
+        {showOperationGuide && (
+          <View className="mt-3 bg-white rounded-lg p-4 border border-blue-200">
+            <Text className="text-sm font-semibold text-gray-800 mb-2">📋 抄表记录管理操作指南</Text>
+
+            <View className="mb-3">
+              <Text className="text-sm font-medium text-gray-700 mb-1">🔍 查看和筛选：</Text>
+              <Text className="text-xs text-gray-600 leading-4 ml-2">
+                • 使用楼宇筛选器选择特定楼宇的抄表记录{'\n'}
+                • 使用房间筛选器查看特定房间的抄表记录{'\n'}
+                • 下拉页面可刷新最新数据
+              </Text>
+            </View>
+
+            <View className="mb-3">
+              <Text className="text-sm font-medium text-gray-700 mb-1">➕ 新建抄表：</Text>
+              <Text className="text-xs text-gray-600 leading-4 ml-2">
+                • 点击右上角"+ 新建"按钮创建新的抄表记录{'\n'}
+                • 如已选择房间，新建时会自动关联该房间{'\n'}
+                • 填写水表、电表读数和相关信息
+              </Text>
+            </View>
+
+            <View className="mb-3">
+              <Text className="text-sm font-medium text-gray-700 mb-1">✏️ 编辑和管理：</Text>
+              <Text className="text-xs text-gray-600 leading-4 ml-2">
+                • 点击抄表记录可查看详细信息{'\n'}
+                • 使用"编辑"按钮修改抄表数据{'\n'}
+                • 使用"确认"按钮确认抄表记录{'\n'}
+                • 使用"删除"按钮移除错误记录
+              </Text>
+            </View>
+
+            <View className="mb-2">
+              <Text className="text-sm font-medium text-gray-700 mb-1">📊 状态说明：</Text>
+              <Text className="text-xs text-gray-600 leading-4 ml-2">
+                • 🟡 待确认：新创建的抄表记录{'\n'}
+                • 🟢 已确认：已验证的抄表记录{'\n'}
+                • 🔴 已取消：已取消的抄表记录
+              </Text>
+            </View>
+
+            <View className="bg-yellow-50 p-2 rounded border border-yellow-200 mt-2">
+              <Text className="text-xs text-yellow-800">
+                💡 提示：建议按楼宇或房间筛选后再进行抄表操作，可提高工作效率
+              </Text>
+            </View>
+          </View>
+        )}
+      </View>
 
       {/* 筛选器 */}
       <View className="bg-white px-5 py-3 border-b border-gray-100">

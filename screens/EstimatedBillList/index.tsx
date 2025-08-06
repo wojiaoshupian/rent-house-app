@@ -436,15 +436,11 @@ const EstimatedBillListScreen: React.FC<EstimatedBillListScreenProps> = () => {
     );
   };
 
-  // 编辑账单状态
+  // 编辑账单状态 - 只允许在已生成和已确认之间切换
   const editStatus = (bill: EstimatedBill) => {
     const statusOptions = [
       { label: '已生成', value: 'GENERATED' },
-      { label: '已确认', value: 'CONFIRMED' },
-      { label: '已发送', value: 'SENT' },
-      { label: '已支付', value: 'PAID' },
-      { label: '已逾期', value: 'OVERDUE' },
-      { label: '已取消', value: 'CANCELLED' }
+      { label: '已确认', value: 'CONFIRMED' }
     ];
 
     const buttons = statusOptions
@@ -762,7 +758,7 @@ const EstimatedBillListScreen: React.FC<EstimatedBillListScreenProps> = () => {
           账单日期：{formatDate(bill.billDate)}
         </Text>
 
-        <View className="flex-row space-x-2">
+        <View className="flex-row space-x-2 gap-2">
           {/* 编辑按钮 - 所有状态都可以编辑 */}
           <TouchableOpacity
             className="bg-blue-500 px-3 py-2 rounded-lg"

@@ -37,6 +37,7 @@ export default function RoomListScreen() {
   const [error, setError] = useState<string | null>(null);
   const [selectedBuildingId, setSelectedBuildingId] = useState<number | undefined>(params?.buildingId);
   const [showBuildingFilter, setShowBuildingFilter] = useState(false);
+  const [showOperationGuide, setShowOperationGuide] = useState(false);
 
   // 组件挂载时获取数据
   useEffect(() => {
@@ -500,6 +501,106 @@ export default function RoomListScreen() {
             </TouchableOpacity>
           </View>
         </View>
+      </View>
+
+      {/* 操作说明 */}
+      <View style={{
+        backgroundColor: '#eff6ff',
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#dbeafe'
+      }}>
+        <TouchableOpacity
+          onPress={() => setShowOperationGuide(!showOperationGuide)}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ fontSize: 16, fontWeight: '600', color: '#1d4ed8', marginRight: 8 }}>
+              📖 操作说明
+            </Text>
+          </View>
+          <Text style={{ fontSize: 16, color: '#3b82f6' }}>
+            {showOperationGuide ? '▲' : '▼'}
+          </Text>
+        </TouchableOpacity>
+
+        {showOperationGuide && (
+          <View style={{
+            marginTop: 12,
+            backgroundColor: 'white',
+            borderRadius: 8,
+            padding: 16,
+            borderWidth: 1,
+            borderColor: '#dbeafe'
+          }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#1f2937', marginBottom: 8 }}>
+              🏠 房间管理操作指南
+            </Text>
+
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>
+                🔍 查看和筛选：
+              </Text>
+              <Text style={{ fontSize: 12, color: '#6b7280', lineHeight: 16, marginLeft: 8 }}>
+                • 使用楼宇筛选器选择特定楼宇的房间{'\n'}
+                • 查看房间租金、状态和租户信息{'\n'}
+                • 下拉页面可刷新最新数据
+              </Text>
+            </View>
+
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>
+                ➕ 新建房间：
+              </Text>
+              <Text style={{ fontSize: 12, color: '#6b7280', lineHeight: 16, marginLeft: 8 }}>
+                • 点击右上角"+ 新建"按钮创建新房间{'\n'}
+                • 填写房间号、租金和基本信息{'\n'}
+                • 如已选择楼宇，新建时会自动关联
+              </Text>
+            </View>
+
+            <View style={{ marginBottom: 12 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>
+                📊 房间管理：
+              </Text>
+              <Text style={{ fontSize: 12, color: '#6b7280', lineHeight: 16, marginLeft: 8 }}>
+                • 点击房间卡片查看详细信息{'\n'}
+                • 使用"编辑"按钮修改房间信息{'\n'}
+                • 使用"抄表"按钮进行水电抄表{'\n'}
+                • 使用"账单"按钮查看历史账单
+              </Text>
+            </View>
+
+            <View style={{ marginBottom: 8 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 4 }}>
+                🏷️ 状态说明：
+              </Text>
+              <Text style={{ fontSize: 12, color: '#6b7280', lineHeight: 16, marginLeft: 8 }}>
+                • 🟢 已出租：房间已有租户{'\n'}
+                • 🟡 空置：房间暂无租户{'\n'}
+                • 🔴 维修中：房间正在维修
+              </Text>
+            </View>
+
+            <View style={{
+              backgroundColor: '#fef3c7',
+              padding: 8,
+              borderRadius: 6,
+              borderWidth: 1,
+              borderColor: '#fbbf24',
+              marginTop: 8
+            }}>
+              <Text style={{ fontSize: 12, color: '#92400e' }}>
+                💡 提示：建议先选择楼宇筛选，再进行房间管理操作
+              </Text>
+            </View>
+          </View>
+        )}
       </View>
 
       {/* 筛选器 */}

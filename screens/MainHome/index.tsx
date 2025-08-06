@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -8,6 +8,7 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const MainHomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const [showOperationGuide, setShowOperationGuide] = useState(false);
 
   // 快捷操作项
   const quickActions = [
@@ -63,6 +64,80 @@ export const MainHomeScreen = () => {
         <View className="bg-white px-6 py-6 shadow-sm">
           <Text className="mb-2 text-3xl font-bold text-gray-800">楼宇管理系统</Text>
           <Text className="text-base text-gray-500">高效管理您的楼宇和租户</Text>
+        </View>
+
+        {/* 操作说明 */}
+        <View className="bg-blue-50 px-6 py-4 border-b border-blue-100">
+          <TouchableOpacity
+            onPress={() => setShowOperationGuide(!showOperationGuide)}
+            className="flex-row items-center justify-between"
+          >
+            <View className="flex-row items-center">
+              <Text className="text-lg font-semibold text-blue-700 mr-2">
+                📖 系统使用指南
+              </Text>
+            </View>
+            <Text className="text-lg text-blue-600">
+              {showOperationGuide ? '▲' : '▼'}
+            </Text>
+          </TouchableOpacity>
+
+          {showOperationGuide && (
+            <View className="mt-4 bg-white rounded-xl p-5 border border-blue-200">
+              <Text className="text-base font-bold text-gray-800 mb-3">🏢 楼宇管理系统操作流程</Text>
+
+              <View className="mb-4">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">📋 推荐操作流程：</Text>
+                <View className="bg-gray-50 rounded-lg p-3">
+                  <Text className="text-sm text-gray-600 leading-5">
+                    1️⃣ 创建楼宇 → 2️⃣ 添加房间 → 3️⃣ 抄水电表 → 4️⃣ 生成账单
+                  </Text>
+                </View>
+              </View>
+
+              <View className="mb-4">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">🏢 楼宇管理：</Text>
+                <Text className="text-xs text-gray-600 leading-4 ml-2">
+                  • 点击"创建楼宇"添加新楼宇信息{'\n'}
+                  • 点击"楼宇管理"查看和编辑现有楼宇{'\n'}
+                  • 设置电费、水费、热水费单价
+                </Text>
+              </View>
+
+              <View className="mb-4">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">🏠 房间管理：</Text>
+                <Text className="text-xs text-gray-600 leading-4 ml-2">
+                  • 在楼宇下创建房间{'\n'}
+                  • 设置房间租金和租户信息{'\n'}
+                  • 管理房间出租状态
+                </Text>
+              </View>
+
+              <View className="mb-4">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">📊 抄表管理：</Text>
+                <Text className="text-xs text-gray-600 leading-4 ml-2">
+                  • 定期录入水表、电表读数{'\n'}
+                  • 系统自动计算用量{'\n'}
+                  • 支持按楼宇、房间筛选查看
+                </Text>
+              </View>
+
+              <View className="mb-3">
+                <Text className="text-sm font-semibold text-gray-700 mb-2">💰 账单管理：</Text>
+                <Text className="text-xs text-gray-600 leading-4 ml-2">
+                  • 查看预估账单{'\n'}
+                  • 生成正式账单{'\n'}
+                  • 导出账单数据
+                </Text>
+              </View>
+
+              <View className="bg-green-50 p-3 rounded-lg border border-green-200">
+                <Text className="text-xs text-green-800 font-medium">
+                  💡 新手提示：建议先从"创建楼宇"开始，逐步完善系统数据
+                </Text>
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Quick Actions */}
