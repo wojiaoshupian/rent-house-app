@@ -98,10 +98,6 @@ export default function RoomListScreen() {
         return { text: '空置', color: '#6b7280', icon: '🏠' };
       case RentalStatus.RENTED:
         return { text: '已出租', color: '#10b981', icon: '🏡' };
-      case RentalStatus.MAINTENANCE:
-        return { text: '维修中', color: '#f59e0b', icon: '🔧' };
-      case RentalStatus.RESERVED:
-        return { text: '已预订', color: '#3b82f6', icon: '📝' };
       default:
         return { text: '未知', color: '#6B7280', icon: '❓' };
     }
@@ -114,13 +110,11 @@ export default function RoomListScreen() {
     return building ? building.buildingName : '未知楼宇';
   };
 
-  // 更新房间出租状态 - 显示所有状态选项
+  // 更新房间出租状态 - 只显示空置和已出租
   const updateRoomRentalStatus = (roomId: number, currentStatus: RentalStatus) => {
     const statusOptions = [
       { label: '🏠 空置', value: RentalStatus.VACANT },
-      { label: '🏡 已出租', value: RentalStatus.RENTED },
-      { label: '🔧 维修中', value: RentalStatus.MAINTENANCE },
-      { label: '📝 已预订', value: RentalStatus.RESERVED },
+      { label: '🏡 已出租', value: RentalStatus.RENTED }
     ];
 
     const buttons = statusOptions
@@ -377,9 +371,7 @@ export default function RoomListScreen() {
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {[
               { status: RentalStatus.VACANT, label: '空置', color: '#6b7280', icon: '🏠' },
-              { status: RentalStatus.RENTED, label: '已出租', color: '#10b981', icon: '🏡' },
-              { status: RentalStatus.MAINTENANCE, label: '维修中', color: '#f59e0b', icon: '🔧' },
-              { status: RentalStatus.RESERVED, label: '已预订', color: '#3b82f6', icon: '📝' },
+              { status: RentalStatus.RENTED, label: '已出租', color: '#10b981', icon: '🏡' }
             ].filter(item => item.status !== room.rentalStatus).map((item) => (
               <TouchableOpacity
                 key={item.status}

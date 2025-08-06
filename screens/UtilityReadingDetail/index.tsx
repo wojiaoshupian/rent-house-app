@@ -130,46 +130,7 @@ export default function UtilityReadingDetailScreen() {
     });
   };
 
-  // 争议抄表记录
-  const handleDisputeReading = () => {
-    if (!reading) return;
-
-    Alert.alert(
-      '标记争议',
-      `确定要将房间"${reading.roomNumber}"在${reading.readingDate}的抄表记录标记为有争议吗？`,
-      [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '确定',
-          onPress: () => {
-            utilityReadingService.disputeUtilityReading(reading.id, '用户标记为争议').subscribe({
-              next: (disputedReading) => {
-                console.log('✅ 标记争议成功');
-                setReading({ ...reading, readingStatus: disputedReading.readingStatus });
-                Alert.alert('标记成功', '抄表记录已标记为有争议');
-              },
-              error: (error) => {
-                console.error('❌ 标记争议失败:', error);
-
-                // 优先显示接口返回的错误信息
-                let errorMessage = '标记争议时发生错误';
-
-                if (error.message) {
-                  errorMessage = error.message;
-                } else if (error.data?.message) {
-                  errorMessage = error.data.message;
-                } else if (error.response?.data?.message) {
-                  errorMessage = error.response.data.message;
-                }
-
-                Alert.alert('标记失败', errorMessage);
-              }
-            });
-          }
-        }
-      ]
-    );
-  };
+  // 争议标记功能已移除
 
   // 获取读数状态显示文本和颜色
   const getReadingStatusDisplay = (status?: ReadingStatus) => {
@@ -178,8 +139,6 @@ export default function UtilityReadingDetailScreen() {
         return { text: '待确认', color: '#F59E0B' };
       case ReadingStatus.CONFIRMED:
         return { text: '已确认', color: '#10B981' };
-      case ReadingStatus.DISPUTED:
-        return { text: '有争议', color: '#EF4444' };
       default:
         return { text: '未知', color: '#6B7280' };
     }
@@ -546,21 +505,7 @@ export default function UtilityReadingDetailScreen() {
               </TouchableOpacity>
             )}
 
-            {reading.readingStatus === ReadingStatus.CONFIRMED && (
-              <TouchableOpacity
-                style={{
-                  backgroundColor: '#ef4444',
-                  padding: 16,
-                  borderRadius: 8,
-                  alignItems: 'center'
-                }}
-                onPress={handleDisputeReading}
-              >
-                <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>
-                  标记为争议
-                </Text>
-              </TouchableOpacity>
-            )}
+            {/* 争议标记功能已移除 */}
 
             <TouchableOpacity
               style={{

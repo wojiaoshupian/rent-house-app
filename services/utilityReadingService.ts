@@ -396,18 +396,7 @@ class UtilityReadingService {
     return this.updateUtilityReadingStatus(readingId, ReadingStatus.CONFIRMED);
   }
 
-  /**
-   * 争议抄表记录（需要认证）
-   */
-  disputeUtilityReading(readingId: number, notes?: string): Observable<UtilityReading> {
-    console.log('⚠️ 争议抄表记录:', readingId, '备注:', notes);
-
-    return this.updateUtilityReading({ 
-      id: readingId, 
-      readingStatus: ReadingStatus.DISPUTED,
-      notes: notes 
-    });
-  }
+  // 争议抄表记录功能已移除
 }
 
 // 导出抄表服务实例

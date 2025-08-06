@@ -12,8 +12,7 @@ export enum ReadingType {
 // 读数状态枚举
 export enum ReadingStatus {
   PENDING = 'PENDING',     // 待确认
-  CONFIRMED = 'CONFIRMED', // 已确认
-  DISPUTED = 'DISPUTED'    // 有争议
+  CONFIRMED = 'CONFIRMED'  // 已确认
 }
 
 // 抄表记录基础信息

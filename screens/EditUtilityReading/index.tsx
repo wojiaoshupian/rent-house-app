@@ -69,7 +69,7 @@ export default function EditUtilityReadingScreen() {
           meterReader: reading.meterReader,
           readingType: reading.readingType,
           readingStatus: reading.readingStatus,
-          notes: reading.notes || ''
+          notes: '' // 不自动填充备注内容，保持空白
         });
         
         // 获取房间详情
@@ -214,8 +214,6 @@ export default function EditUtilityReadingScreen() {
         return '待确认';
       case ReadingStatus.CONFIRMED:
         return '已确认';
-      case ReadingStatus.DISPUTED:
-        return '有争议';
       default:
         return '未知状态';
     }

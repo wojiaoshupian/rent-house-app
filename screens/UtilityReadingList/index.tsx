@@ -192,44 +192,7 @@ export default function UtilityReadingListScreen() {
     });
   };
 
-  // 争议抄表记录
-  const handleDisputeReading = (reading: UtilityReading) => {
-    Alert.alert(
-      '标记争议',
-      `确定要将房间"${reading.roomNumber}"在${reading.readingDate}的抄表记录标记为有争议吗？`,
-      [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '确定',
-          onPress: () => {
-            utilityReadingService.disputeUtilityReading(reading.id, '用户标记为争议').subscribe({
-              next: (disputedReading) => {
-                console.log('✅ 标记争议成功');
-                Alert.alert('标记成功', '抄表记录已标记为有争议');
-                fetchReadings(); // 重新获取列表
-              },
-              error: (error) => {
-                console.error('❌ 标记争议失败:', error);
-
-                // 优先显示接口返回的错误信息
-                let errorMessage = '标记争议时发生错误';
-
-                if (error.message) {
-                  errorMessage = error.message;
-                } else if (error.data?.message) {
-                  errorMessage = error.data.message;
-                } else if (error.response?.data?.message) {
-                  errorMessage = error.response.data.message;
-                }
-
-                Alert.alert('标记失败', errorMessage);
-              }
-            });
-          }
-        }
-      ]
-    );
-  };
+  // 争议标记功能已移除
 
   // 获取读数状态显示文本和颜色
   const getReadingStatusDisplay = (status?: ReadingStatus) => {
@@ -238,8 +201,6 @@ export default function UtilityReadingListScreen() {
         return { text: '待确认', color: '#F59E0B' };
       case ReadingStatus.CONFIRMED:
         return { text: '已确认', color: '#10B981' };
-      case ReadingStatus.DISPUTED:
-        return { text: '有争议', color: '#EF4444' };
       default:
         return { text: '未知', color: '#6B7280' };
     }
@@ -382,16 +343,7 @@ export default function UtilityReadingListScreen() {
             </TouchableOpacity>
           )}
 
-          {reading.readingStatus === ReadingStatus.CONFIRMED && (
-            <TouchableOpacity
-              className="bg-red-500 px-3 py-1.5 rounded flex-1 mr-1.5"
-              onPress={() => handleDisputeReading(reading)}
-            >
-              <Text className="text-white text-xs font-semibold text-center">
-                争议
-              </Text>
-            </TouchableOpacity>
-          )}
+          {/* 争议按钮已移除 */}
 
           <TouchableOpacity
             className="bg-red-500 px-3 py-1.5 rounded flex-1"
@@ -419,7 +371,7 @@ export default function UtilityReadingListScreen() {
               {getFilterDisplayText()} - 共 {readings.length} 条记录
             </Text>
           </View>
-          <View className="flex-row space-x-2">
+          <View className="flex-row space-x-2 gap-2">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               className="bg-gray-500 px-3 py-2 rounded-lg"
@@ -446,6 +398,10 @@ export default function UtilityReadingListScreen() {
           </View>
         </View>
       </View>
+
+
+
+
 
       {/* 筛选器 */}
       <View className="bg-white px-5 py-3 border-b border-gray-100">

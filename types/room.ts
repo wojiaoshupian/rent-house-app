@@ -5,9 +5,7 @@
 // 出租状态枚举
 export enum RentalStatus {
   VACANT = 'VACANT',           // 空置
-  RENTED = 'RENTED',          // 已出租
-  MAINTENANCE = 'MAINTENANCE', // 维修中
-  RESERVED = 'RESERVED'        // 已预订
+  RENTED = 'RENTED'           // 已出租
 }
 
 // 房间基础信息
@@ -77,8 +75,6 @@ export interface RoomStats {
   total: number;
   vacant: number;        // 空置
   rented: number;        // 已出租
-  maintenance: number;   // 维修中
-  reserved: number;      // 已预订
   occupancyRate: number; // 入住率
 }
 
