@@ -9,16 +9,20 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types/navigation';
 import { billService } from '../../services/billService';
 import { EstimatedBill, EstimatedBillStatus, ESTIMATED_BILL_STATUS_OPTIONS } from '../../types/bill';
 import { useUser } from '../../contexts/UserContext';
 import { catchError, of } from 'rxjs';
 import { EstimatedBillEditForm } from '../../components/EstimatedBillEditForm';
 
+type EstimatedBillListNavigationProp = NativeStackNavigationProp<RootStackParamList, 'EstimatedBillList'>;
+
 interface EstimatedBillListScreenProps {}
 
 const EstimatedBillListScreen: React.FC<EstimatedBillListScreenProps> = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<EstimatedBillListNavigationProp>();
   const { user } = useUser();
   
   const [bills, setBills] = useState<EstimatedBill[]>([]);
@@ -44,13 +48,18 @@ const EstimatedBillListScreen: React.FC<EstimatedBillListScreenProps> = () => {
       if (selectedStatus !== 'ALL') params.billStatus = selectedStatus;
 
       const response = await billService.getEstimatedBills(params).toPromise();
-      
+
+      if (!response) {
+        console.warn('获取预估账单响应为空');
+        return;
+      }
+
       if (page === 0) {
         setBills(response.data);
       } else {
         setBills(prev => [...prev, ...response.data]);
       }
-      
+
       setCurrentPage(response.pagination.page);
       setTotalPages(response.pagination.totalPages);
     } catch (error: any) {
@@ -135,7 +144,7 @@ const EstimatedBillListScreen: React.FC<EstimatedBillListScreenProps> = () => {
 
   // 处理账单点击
   const handleBillPress = (bill: EstimatedBill) => {
-    navigation.navigate('BillDetail' as never, { billId: bill.id } as never);
+    navigation.navigate('BillDetail', { billId: bill.id });
   };
 
   // 处理删除预估账单
@@ -443,7 +452,7 @@ const EstimatedBillListScreen: React.FC<EstimatedBillListScreenProps> = () => {
       { label: '已确认', value: 'CONFIRMED' }
     ];
 
-    const buttons = statusOptions
+    const buttons: Array<{ text: string; onPress: () => void; style?: 'default' | 'cancel' | 'destructive' }> = statusOptions
       .filter(option => option.value !== bill.billStatus)
       .map(option => ({
         text: option.label,

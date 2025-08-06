@@ -8,13 +8,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../types/navigation';
 import { billService } from '../../services/billService';
 import { BillDetail, BillStatus, PaymentRecord, BILL_STATUS_OPTIONS, BILL_TYPE_OPTIONS, PAYMENT_METHOD_OPTIONS } from '../../types/bill';
+
+type BillDetailNavigationProp = NativeStackNavigationProp<RootStackParamList, 'BillDetail'>;
 
 interface BillDetailScreenProps {}
 
 const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<BillDetailNavigationProp>();
   const route = useRoute();
   const { billId } = route.params as { billId: number };
   
@@ -31,7 +35,7 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
         billService.getPaymentRecords(billId).toPromise()
       ]);
       
-      setBill(billDetail);
+      setBill(billDetail || null);
       setPaymentRecords(payments || []);
     } catch (error: any) {
       console.error('加载账单详情失败:', error);
@@ -85,46 +89,61 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
     return new Date(dateString).toLocaleString('zh-CN');
   };
 
-  // 处理支付
-  const handlePayBill = () => {
-    if (!bill) return;
+  // 条件渲染辅助函数
+  const renderIfExists = (condition: any, component: React.ReactNode) => {
+    return condition ? component : null;
+  };
 
-    Alert.alert(
-      '确认支付',
-      `确定要支付账单"${bill.title}"吗？\n金额：${formatAmount(bill.amount)}`,
-      [
-        { text: '取消', style: 'cancel' },
-        {
-          text: '确认支付',
-          onPress: async () => {
-            try {
-              await billService.payBill(bill.id, {
-                amount: bill.amount,
-                paymentMethod: 'CASH',
-                notes: '现金支付'
-              }).toPromise();
-              
-              Alert.alert('成功', '账单支付成功！');
-              loadBillDetail();
-            } catch (error: any) {
-              Alert.alert('错误', error.message || '支付失败');
-            }
-          }
-        }
-      ]
+  // 渲染费用项目
+  const renderFeeItem = (amount: number | undefined, label: string, usage?: number, unit?: string) => {
+    if (!amount || amount <= 0) return null;
+
+    const usageText = usage && unit ? ` (${usage} ${unit})` : '';
+    return (
+      <View className="flex-row justify-between">
+        <Text className="text-gray-600">{label}{usageText}</Text>
+        <Text className="text-gray-800 font-medium">{formatAmount(amount)}</Text>
+      </View>
     );
   };
+
+  // 渲染信息项目
+  const renderInfoItem = (value: any, label: string, formatter?: (value: any) => string) => {
+    if (!value) return null;
+
+    const displayValue = formatter ? formatter(value) : value;
+    return (
+      <View className="flex-row justify-between">
+        <Text className="text-gray-600">{label}</Text>
+        <Text className="text-gray-800 font-medium">{displayValue}</Text>
+      </View>
+    );
+  };
+
+  // 渲染描述项目
+  const renderDescriptionItem = (value: string | undefined, label: string) => {
+    if (!value) return null;
+
+    return (
+      <View>
+        <Text className="text-gray-600 mb-1">{label}</Text>
+        <Text className="text-gray-800">{value}</Text>
+      </View>
+    );
+  };
+
+
 
   // 处理编辑
   const handleEditBill = () => {
     if (!bill) return;
-    navigation.navigate('EditBill' as never, { billId: bill.id } as never);
+    navigation.navigate('EditBill', { billId: bill.id });
   };
 
   // 处理生成电子账单
   const handleGenerateCanvas = () => {
     if (!bill) return;
-    navigation.navigate('BillCanvas' as never, { billId: bill.id } as never);
+    navigation.navigate('BillCanvas', { billId: bill.id });
   };
 
   // 处理删除
@@ -202,12 +221,12 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
             <Text className="text-3xl font-bold text-gray-900 text-center mb-2">
               {formatAmount(bill.amount)}
             </Text>
-            {bill.paidAmount && bill.paidAmount > 0 && (
+            {renderIfExists(bill.paidAmount && bill.paidAmount > 0, (
               <Text className="text-center text-gray-600">
-                已支付：{formatAmount(bill.paidAmount)} | 
-                剩余：{formatAmount(bill.remainingAmount || (bill.amount - bill.paidAmount))}
+                已支付：{formatAmount(bill.paidAmount || 0)} |
+                剩余：{formatAmount(bill.remainingAmount || (bill.amount - (bill.paidAmount || 0)))}
               </Text>
-            )}
+            ))}
           </View>
         </View>
 
@@ -216,7 +235,7 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
           <Text className="text-lg font-semibold text-gray-800 mb-4">费用明细</Text>
 
           {/* 调试信息 - 开发环境显示 */}
-          {__DEV__ && (
+          {renderIfExists(__DEV__, (
             <View className="bg-yellow-100 p-2 mb-4 rounded">
               <Text className="text-xs text-gray-600">调试信息:</Text>
               <Text className="text-xs text-gray-600">rent: {bill.rent}</Text>
@@ -224,57 +243,32 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
               <Text className="text-xs text-gray-600">electricityUsage: {bill.electricityUsage}</Text>
               <Text className="text-xs text-gray-600">waterUsage: {bill.waterUsage}</Text>
             </View>
-          )}
+          ))}
 
           <View className="space-y-3">
-            {bill.rent && bill.rent > 0 && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">房租</Text>
-                <Text className="text-gray-800 font-medium">{formatAmount(bill.rent)}</Text>
-              </View>
+            {renderFeeItem(bill.rent, '房租')}
+            {renderFeeItem(bill.deposit, '押金')}
+            {renderFeeItem(
+              bill.electricityAmount || ((bill.electricityUsage || 0) * (bill.room?.electricityUnitPrice || 0)),
+              '电费',
+              bill.electricityUsage,
+              '度'
             )}
-
-            {bill.deposit && bill.deposit > 0 && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">押金</Text>
-                <Text className="text-gray-800 font-medium">{formatAmount(bill.deposit)}</Text>
-              </View>
+            {renderFeeItem(
+              bill.waterAmount || ((bill.waterUsage || 0) * (bill.room?.waterUnitPrice || 0)),
+              '水费',
+              bill.waterUsage,
+              '吨'
             )}
-
-            {bill.electricityUsage && bill.electricityUsage > 0 && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">电费 ({bill.electricityUsage} 度)</Text>
-                <Text className="text-gray-800 font-medium">
-                  {formatAmount(bill.electricityAmount || (bill.electricityUsage * (bill.room?.electricityUnitPrice || 0)))}
-                </Text>
-              </View>
+            {renderFeeItem(
+              bill.hotWaterAmount || ((bill.hotWaterUsage || 0) * (bill.room?.hotWaterUnitPrice || 0)),
+              '热水费',
+              bill.hotWaterUsage,
+              '吨'
             )}
-
-            {bill.waterUsage && bill.waterUsage > 0 && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">水费 ({bill.waterUsage} 吨)</Text>
-                <Text className="text-gray-800 font-medium">
-                  {formatAmount(bill.waterAmount || (bill.waterUsage * (bill.room?.waterUnitPrice || 0)))}
-                </Text>
-              </View>
-            )}
-
-            {bill.hotWaterUsage && bill.hotWaterUsage > 0 && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">热水费 ({bill.hotWaterUsage} 吨)</Text>
-                <Text className="text-gray-800 font-medium">
-                  {formatAmount(bill.hotWaterAmount || (bill.hotWaterUsage * (bill.room?.hotWaterUnitPrice || 0)))}
-                </Text>
-              </View>
-            )}
-
-            {bill.otherFees && bill.otherFees > 0 && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">
-                  其他费用{bill.otherFeesDescription ? ` (${bill.otherFeesDescription})` : ''}
-                </Text>
-                <Text className="text-gray-800 font-medium">{formatAmount(bill.otherFees)}</Text>
-              </View>
+            {renderFeeItem(
+              bill.otherFees,
+              `其他费用${bill.otherFeesDescription ? ` (${bill.otherFeesDescription})` : ''}`
             )}
 
             <View className="border-t border-gray-200 pt-3 mt-3">
@@ -306,58 +300,20 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
               <Text className="text-gray-800 font-medium">{formatDate(bill.dueDate)}</Text>
             </View>
 
-            {bill.room && (
-              <>
-                <View className="flex-row justify-between">
-                  <Text className="text-gray-600">房间信息</Text>
-                  <Text className="text-gray-800 font-medium">
-                    {bill.room.roomNumber} · {bill.room.buildingName}
-                  </Text>
-                </View>
-              </>
+            {renderInfoItem(
+              bill.room ? `${bill.room.roomNumber} · ${bill.room.buildingName}` : null,
+              '房间信息'
             )}
-
-            {bill.tenant && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">租户信息</Text>
-                <Text className="text-gray-800 font-medium">{bill.tenant.name}</Text>
-              </View>
-            )}
-
-            {bill.paymentMethod && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">支付方式</Text>
-                <Text className="text-gray-800 font-medium">
-                  {getPaymentMethodLabel(bill.paymentMethod)}
-                </Text>
-              </View>
-            )}
-
-            {bill.paidAt && (
-              <View className="flex-row justify-between">
-                <Text className="text-gray-600">支付时间</Text>
-                <Text className="text-gray-800 font-medium">{formatDateTime(bill.paidAt)}</Text>
-              </View>
-            )}
-
-            {bill.description && (
-              <View>
-                <Text className="text-gray-600 mb-1">账单描述</Text>
-                <Text className="text-gray-800">{bill.description}</Text>
-              </View>
-            )}
-
-            {bill.notes && (
-              <View>
-                <Text className="text-gray-600 mb-1">备注</Text>
-                <Text className="text-gray-800">{bill.notes}</Text>
-              </View>
-            )}
+            {renderInfoItem(bill.tenant?.name, '租户信息')}
+            {renderInfoItem(bill.paymentMethod, '支付方式', getPaymentMethodLabel)}
+            {renderInfoItem(bill.paidAt, '支付时间', formatDateTime)}
+            {renderDescriptionItem(bill.description, '账单描述')}
+            {renderDescriptionItem(bill.notes, '备注')}
           </View>
         </View>
 
         {/* 支付记录 */}
-        {paymentRecords.length > 0 && (
+        {renderIfExists(paymentRecords.length > 0, (
           <View className="bg-white m-4 p-4 rounded-xl shadow-sm">
             <Text className="text-lg font-semibold text-gray-800 mb-4">支付记录</Text>
             {paymentRecords.map((record, index) => (
@@ -375,27 +331,20 @@ const BillDetailScreen: React.FC<BillDetailScreenProps> = () => {
                     {formatDateTime(record.paymentDate)}
                   </Text>
                 </View>
-                {record.notes && (
+                {renderIfExists(record.notes, (
                   <Text className="text-sm text-gray-600 mt-1">{record.notes}</Text>
-                )}
+                ))}
               </View>
             ))}
           </View>
-        )}
+        ))}
       </ScrollView>
 
       {/* 底部操作按钮 */}
       <View className="bg-white border-t border-gray-200 p-4">
         {/* 第一行按钮 */}
-        <View className="flex-row space-x-3 mb-3">
-          {bill.status === BillStatus.PENDING && (
-            <TouchableOpacity
-              className="flex-1 bg-green-500 py-3 rounded-lg"
-              onPress={handlePayBill}
-            >
-              <Text className="text-white text-center font-semibold">立即支付</Text>
-            </TouchableOpacity>
-          )}
+        <View className="flex-row space-x-3 mb-3 gap-2">
+        
 
           <TouchableOpacity
             className="flex-1 bg-blue-500 py-3 rounded-lg"
