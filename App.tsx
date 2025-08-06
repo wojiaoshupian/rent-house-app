@@ -6,10 +6,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { MainTabNavigator, TokenStatusMonitor } from './components';
 import { HomeScreen } from './screens/Home';
-import { ZustandDemoScreen } from './screens/ZustandDemo';
-import { RxJSDemoScreen } from './screens/RxJSDemo';
-import { SubjectDemoScreen } from './screens/SubjectDemo';
-import { TabBarDemoScreen } from './screens/TabBarDemo';
 import { RootStackParamList } from './types/navigation';
 import { RegisterScreen } from './screens/Register';
 import { LoginScreen } from './screens/Login';
@@ -56,27 +52,9 @@ export default function App() {
               component={HomeScreen}
               options={{ title: '库集成演示' }}
             />
-            <Stack.Screen
-              name="ZustandDemo"
-              component={ZustandDemoScreen}
-              options={{ title: 'Zustand 状态管理' }}
-            />
-            <Stack.Screen
-              name="RxJSDemo"
-              component={RxJSDemoScreen}
-              options={{ title: 'RxJS 响应式编程' }}
-            />
-            <Stack.Screen
-              name="SubjectDemo"
-              component={SubjectDemoScreen}
-              options={{ title: 'RxJS Subject 演示' }}
-            />
+          
       
-            <Stack.Screen
-              name="TabBarDemo"
-              component={TabBarDemoScreen}
-              options={{ title: '动态 TabBar 演示' }}
-            />
+         
             <Stack.Screen
               name="Register"
               component={RegisterScreen}
