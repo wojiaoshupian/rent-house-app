@@ -10,6 +10,14 @@ type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export const ProfileScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const { user, isAuthenticated, logout } = useUser();
+  const handleComingSoon = (title: string) => {
+    Alert.alert(
+      '暂未开放',
+      `${title}功能暂未开放入口，敬请期待！`,
+      [{ text: '确定', style: 'default' }]
+    );
+  };
+
   const profileItems = [
     {
       id: 1,
@@ -17,6 +25,7 @@ export const ProfileScreen = () => {
       icon: '👤',
       description: '查看和编辑个人资料',
       color: '#3b82f6',
+      onPress: () => handleComingSoon('个人信息'),
     },
     {
       id: 2,
@@ -24,6 +33,7 @@ export const ProfileScreen = () => {
       icon: '⚙️',
       description: '应用设置和偏好',
       color: '#10b981',
+      onPress: () => handleComingSoon('设置'),
     },
     {
       id: 3,
@@ -31,6 +41,7 @@ export const ProfileScreen = () => {
       icon: '🔔',
       description: '管理通知设置',
       color: '#f59e0b',
+      onPress: () => handleComingSoon('通知'),
     },
     {
       id: 4,
@@ -38,28 +49,29 @@ export const ProfileScreen = () => {
       icon: '🔒',
       description: '隐私和安全设置',
       color: '#ef4444',
+      onPress: () => handleComingSoon('隐私'),
     },
   ];
 
   const quickActions = [
-    {
-      id: 1,
-      title: '帮助中心',
-      icon: '❓',
-      description: '获取帮助和支持',
-    },
-    {
-      id: 2,
-      title: '意见反馈',
-      icon: '💬',
-      description: '提交建议和反馈',
-    },
-    {
-      id: 3,
-      title: '关于我们',
-      icon: 'ℹ️',
-      description: '了解更多信息',
-    },
+    // {
+    //   id: 1,
+    //   title: '帮助中心',
+    //   icon: '❓',
+    //   description: '获取帮助和支持',
+    // },
+    // {
+    //   id: 2,
+    //   title: '意见反馈',
+    //   icon: '💬',
+    //   description: '提交建议和反馈',
+    // },
+    // {
+    //   id: 3,
+    //   title: '关于我们',
+    //   icon: 'ℹ️',
+    //   description: '了解更多信息',
+    // },
     {
       id: 4,
       title: '用户注册',
@@ -119,7 +131,11 @@ export const ProfileScreen = () => {
             <Text className="mb-4 text-xl font-bold text-gray-800">账户设置</Text>
             <View className="gap-3">
               {profileItems.map((item) => (
-                <TouchableOpacity key={item.id} className="rounded-2xl bg-white p-5 shadow-md">
+                <TouchableOpacity
+                  key={item.id}
+                  className="rounded-2xl bg-white p-5 shadow-md"
+                  onPress={item.onPress}
+                >
                   <View className="flex-row items-center">
                     <View
                       className="mr-4 h-12 w-12 items-center justify-center rounded-full"
@@ -161,24 +177,7 @@ export const ProfileScreen = () => {
             </View>
           </View>
 
-          {/* Stats */}
-          <View className="rounded-2xl bg-white p-5 shadow-md">
-            <Text className="mb-4 text-xl font-bold text-gray-800">账户信息</Text>
-            <View className="flex-row justify-around">
-              <View className="items-center">
-                <Text className="text-2xl font-bold text-blue-500">128</Text>
-                <Text className="text-xs text-gray-500">使用天数</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-2xl font-bold text-green-500">56</Text>
-                <Text className="text-xs text-gray-500">收藏内容</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-2xl font-bold text-yellow-500">23</Text>
-                <Text className="text-xs text-gray-500">分享次数</Text>
-              </View>
-            </View>
-          </View>
+     
 
           {/* Logout Button */}
           <View className="mt-6">

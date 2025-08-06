@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TabBar, TabItem } from './TabBar';
 import { MainHomeScreen } from '../../screens/MainHome';
 import { UsageScreen } from '../../screens/Usage';
-import { LibraryScreen } from '../../screens/Library';
 import { ProfileScreen } from '../../screens/Profile';
 
 export const MainTabNavigator = () => {
@@ -23,12 +22,7 @@ export const MainTabNavigator = () => {
       icon: '📖',
       badge: 0,
     },
-    {
-      key: 'library',
-      title: '库',
-      icon: '📚',
-      badge: 5,
-    },
+   
     {
       key: 'profile',
       title: '我的',
@@ -47,8 +41,6 @@ export const MainTabNavigator = () => {
         return <MainHomeScreen />;
       case 'usage':
         return <UsageScreen />;
-      case 'library':
-        return <LibraryScreen />;
       case 'profile':
         return <ProfileScreen />;
       default:
