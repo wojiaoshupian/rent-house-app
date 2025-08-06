@@ -9,8 +9,6 @@ import { HomeScreen } from './screens/Home';
 import { ZustandDemoScreen } from './screens/ZustandDemo';
 import { RxJSDemoScreen } from './screens/RxJSDemo';
 import { SubjectDemoScreen } from './screens/SubjectDemo';
-import { LodashDemoScreen } from './screens/LodashDemo';
-import { LibraryDemoScreen } from './screens/LibraryDemo';
 import { TabBarDemoScreen } from './screens/TabBarDemo';
 import { RootStackParamList } from './types/navigation';
 import { RegisterScreen } from './screens/Register';
@@ -73,16 +71,7 @@ export default function App() {
               component={SubjectDemoScreen}
               options={{ title: 'RxJS Subject 演示' }}
             />
-            <Stack.Screen
-              name="LodashDemo"
-              component={LodashDemoScreen}
-              options={{ title: 'Lodash 工具库' }}
-            />
-            <Stack.Screen
-              name="LibraryDemo"
-              component={LibraryDemoScreen}
-              options={{ title: '综合库演示' }}
-            />
+      
             <Stack.Screen
               name="TabBarDemo"
               component={TabBarDemoScreen}

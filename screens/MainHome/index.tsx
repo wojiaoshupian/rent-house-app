@@ -51,21 +51,10 @@ export const MainHomeScreen = () => {
       color: '#EF4444',
       route: 'EstimatedBillList' as const,
     },
-    {
-      id: 6,
-      title: 'RxJS Subject',
-      description: 'Subject 演示和学习',
-      icon: '🔄',
-      color: '#8B5CF6',
-      route: 'SubjectDemo' as const,
-    },
+   
   ];
 
-  const recentActivity = [
-    { id: 1, title: '创建楼宇：阳光公寓', time: '2小时前', type: '操作' },
-    { id: 2, title: '更新租户信息', time: '1天前', type: '管理' },
-    { id: 3, title: '收取水电费', time: '3天前', type: '收费' },
-  ];
+
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -115,33 +104,7 @@ export const MainHomeScreen = () => {
           </View>
         </View>
 
-        {/* Recent Activity */}
-        <View className="px-6 pb-6">
-          <Text className="mb-4 text-xl font-bold text-gray-800">最近活动</Text>
-          <View className="bg-white rounded-xl shadow-sm">
-            {recentActivity.map((activity, index) => (
-              <View
-                key={activity.id}
-                className={`flex-row items-center p-4 ${
-                  index !== recentActivity.length - 1 ? 'border-b border-gray-100' : ''
-                }`}
-              >
-                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                  <Text className="text-blue-600 text-sm font-semibold">
-                    {activity.type.charAt(0)}
-                  </Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="text-gray-800 font-medium">{activity.title}</Text>
-                  <Text className="text-gray-500 text-sm">{activity.time}</Text>
-                </View>
-                <View className="bg-gray-100 rounded-full px-2 py-1">
-                  <Text className="text-gray-600 text-xs">{activity.type}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </View>
+     
       </ScrollView>
     </View>
   );
