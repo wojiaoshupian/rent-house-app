@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,13 +15,17 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types/navigation';
 import { buildingService } from '../../services/buildingService';
 import { Building, UpdateBuildingRequest } from '../../types/building';
-import { catchError, of } from 'rxjs';
+import { catchError, of, Subscription } from 'rxjs';
+import { showToast } from '../../utils/toastUtils';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const BuildingListScreen = () => {
   const navigation = useNavigation<NavigationProp>();
-  
+
+  // 订阅管理
+  const subscriptionRef = useRef<Subscription | null>(null);
+
   // 状态管理
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [loading, setLoading] = useState(false);
@@ -39,21 +43,26 @@ export const BuildingListScreen = () => {
 
   // 获取楼宇列表
   const fetchBuildings = (isRefresh = false) => {
+    // 取消之前的订阅
+    if (subscriptionRef.current) {
+      subscriptionRef.current.unsubscribe();
+    }
+
     if (isRefresh) {
       setRefreshing(true);
     } else {
       setLoading(true);
     }
     setError(null);
-    
-    buildingService.getBuildingList()
+
+    subscriptionRef.current = buildingService.getBuildingList()
       .pipe(
         catchError((error) => {
           console.error('获取楼宇列表失败:', error);
           const errorMessage = error.message || '获取楼宇列表失败，请重试';
           setError(errorMessage);
           if (!isRefresh) {
-            Alert.alert('获取失败', errorMessage);
+            showToast.error('获取失败', errorMessage);
           }
           return of([]);
         })
@@ -61,12 +70,11 @@ export const BuildingListScreen = () => {
       .subscribe({
         next: (buildingList) => {
           setBuildings(buildingList);
-          setLoading(false);
-          setRefreshing(false);
           console.log('✅ 成功获取楼宇列表:', buildingList);
-          
+
           if (isRefresh) {
-            Alert.alert('刷新成功', `获取到 ${buildingList.length} 个楼宇`);
+            showToast.success('刷新成功', `获取到 ${buildingList.length} 个楼宇`);
+            
           }
         },
         error: (error) => {
@@ -74,7 +82,11 @@ export const BuildingListScreen = () => {
           setLoading(false);
           setRefreshing(false);
           setError('网络请求失败，请检查网络连接');
-          Alert.alert('错误', '网络请求失败，请检查网络连接');
+          showToast.error('错误', '网络请求失败，请检查网络连接');
+        },
+        complete: () => {
+          setLoading(false);
+          setRefreshing(false);
         }
       });
   };
@@ -82,6 +94,13 @@ export const BuildingListScreen = () => {
   // 组件挂载时获取数据
   useEffect(() => {
     fetchBuildings();
+
+    // 组件卸载时清理订阅
+    return () => {
+      if (subscriptionRef.current) {
+        subscriptionRef.current.unsubscribe();
+      }
+    };
   }, []);
 
   // 下拉刷新
@@ -111,7 +130,7 @@ export const BuildingListScreen = () => {
             buildingService.deleteBuilding(building.id).subscribe({
               next: () => {
                 console.log('✅ 楼宇删除成功，服务器确认');
-                Alert.alert('删除成功', `楼宇"${building.buildingName}"已删除`);
+                showToast.success('删除成功', `楼宇"${building.buildingName}"已删除`);
 
                 // 重新获取最新数据确保同步
                 setTimeout(() => {
@@ -126,7 +145,7 @@ export const BuildingListScreen = () => {
                 setBuildings(originalBuildings);
                 console.log('🔄 删除失败，已恢复原列表');
 
-                Alert.alert('删除失败', error.message || '删除楼宇时发生错误，请重试');
+                showToast.error('删除失败', error.message || '删除楼宇时发生错误，请重试');
               }
             });
           }
@@ -167,7 +186,7 @@ export const BuildingListScreen = () => {
     buildingService.updateBuilding(updateData).subscribe({
       next: (updatedBuilding) => {
         console.log('✅ 楼宇更新成功:', updatedBuilding);
-        Alert.alert('更新成功', `楼宇"${updatedBuilding.buildingName}"已更新`);
+        showToast.success('更新成功', `楼宇"${updatedBuilding.buildingName}"已更新`);
 
         // 立即更新UI中的楼宇信息（乐观更新）
         const updatedBuildings = buildings.map(building =>
@@ -187,7 +206,7 @@ export const BuildingListScreen = () => {
       },
       error: (error) => {
         console.error('❌ 更新楼宇失败:', error);
-        Alert.alert('更新失败', error.message || '更新楼宇时发生错误，请重试');
+        showToast.error('更新失败', error.message || '更新楼宇时发生错误，请重试');
       }
     });
   };
@@ -265,10 +284,10 @@ export const BuildingListScreen = () => {
       </View>
 
       {/* 操作按钮 */}
-      <View className="flex-row justify-between items-center">
-        <TouchableOpacity className="bg-blue-500 px-4 py-2 rounded-lg flex-1 mr-2">
+      <View className="flex-row justify-between items-center gap-4">
+        {/* <TouchableOpacity className="bg-blue-500 px-4 py-2 rounded-lg flex-1 mr-2">
           <Text className="text-white text-sm font-medium text-center">查看详情</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           className="bg-green-500 px-4 py-2 rounded-lg flex-1 mr-2"
@@ -296,7 +315,7 @@ export const BuildingListScreen = () => {
             <Text className="text-2xl font-bold text-gray-800">楼宇管理</Text>
             <Text className="text-gray-500">共 {buildings.length} 个楼宇</Text>
           </View>
-          <View className="flex-row space-x-2">
+          <View className="flex-row space-x-2 gap-2">
             <TouchableOpacity
               onPress={() => navigation.navigate('Main')}
               className="bg-gray-500 px-3 py-2 rounded-lg"

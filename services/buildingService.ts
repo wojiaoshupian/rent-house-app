@@ -45,7 +45,11 @@ class BuildingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -66,16 +70,16 @@ class BuildingService {
           return;
         }
 
-        // 认证通过，先获取当前用户信息
-        userService.getCurrentUser().subscribe({
-          next: (currentUser) => {
+        // 认证通过，使用 switchMap 来正确处理嵌套的 Observable
+        userService.getCurrentUser().pipe(
+          switchMap((currentUser) => {
             console.log('👤 当前用户:', currentUser.username, 'ID:', currentUser.id);
 
             // 使用用户ID获取拥有的楼宇
             const url = `${this.baseUrl}/owned/${currentUser.id}`;
             console.log('🔗 调用接口:', url);
 
-            apiService.get<Building[]>(url, { params }).pipe(
+            return apiService.get<Building[]>(url, { params }).pipe(
               map((response) => {
                 console.log('✅ 获取用户楼宇列表成功:', response);
                 console.log('📊 楼宇数量:', response.data.length);
@@ -95,12 +99,16 @@ class BuildingService {
 
                 throw error;
               })
-            ).subscribe(subscriber);
-          },
-          error: (userError) => {
+            );
+          }),
+          catchError((userError) => {
             console.error('❌ 获取当前用户信息失败:', userError);
-            subscriber.error(new Error('获取用户信息失败，请重新登录'));
-          }
+            throw new Error('获取用户信息失败，请重新登录');
+          })
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
         });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
@@ -157,7 +165,11 @@ class BuildingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -200,7 +212,11 @@ class BuildingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -244,7 +260,11 @@ class BuildingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));

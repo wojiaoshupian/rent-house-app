@@ -6,6 +6,7 @@ import { RootStackParamList } from '../../types/navigation';
 import { userService, LoginRequest } from '../../services/userService';
 import { useUser } from '../../contexts/UserContext';
 import { catchError, of } from 'rxjs';
+import { showToast } from '../../utils/toastUtils';
 import { LoginForm } from './LoginForm';
 import { validateLoginForm } from './validation';
 
@@ -37,7 +38,7 @@ export const LoginScreen = () => {
         catchError((error) => {
           console.error('登录失败:', error);
           const errorMessage = error.message || '登录失败，请重试';
-          Alert.alert('登录失败', errorMessage);
+          showToast.error('登录失败', errorMessage);
           return of(null);
         })
       )
@@ -49,24 +50,23 @@ export const LoginScreen = () => {
             setUser(loginResponse.user);
             console.log('👤 用户登录成功，信息已存储到 Context:', loginResponse.user);
 
-            Alert.alert('登录成功', `欢迎回来，${loginResponse.user.username || '用户'}！`, [
-              {
-                text: '确定',
-                onPress: () => navigation.goBack(),
-              },
-            ]);
+            showToast.success('登录成功', `欢迎回来，${loginResponse.user.username || '用户'}！`);
+            // 延迟导航，让用户看到成功消息
+            setTimeout(() => {
+              navigation.goBack();
+            }, 1500);
 
             // 清空表单
             setUsername('');
             setPassword('');
           } else {
-            Alert.alert('登录失败', '服务器返回的数据格式不正确');
+            showToast.error('登录失败', '服务器返回的数据格式不正确');
           }
         },
         error: (error) => {
           console.error('RxJS错误:', error);
           setLoading(false);
-          Alert.alert('错误', '网络请求失败，请检查网络连接');
+          showToast.error('错误', '网络请求失败，请检查网络连接');
         },
       });
   };

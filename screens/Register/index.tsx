@@ -9,6 +9,7 @@ import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { RegisterForm } from './RegisterForm';
 import { validateRegisterForm } from './validation';
+import { showToast } from '../../utils/toastUtils';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -53,7 +54,7 @@ export const RegisterScreen = () => {
         catchError((error) => {
           console.error('注册失败:', error);
           const errorMessage = error.message || '注册失败，请重试';
-          Alert.alert('注册失败', errorMessage);
+          showToast.error('注册失败', errorMessage);
           return of(null);
         })
       )
@@ -65,12 +66,11 @@ export const RegisterScreen = () => {
             setUser(user);
             console.log('👤 用户信息已存储到 Context:', user);
 
-            Alert.alert('注册成功', `用户 ${user.username} 注册成功！`, [
-              {
-                text: '确定',
-                onPress: () => navigation.goBack(),
-              },
-            ]);
+            showToast.success('注册成功', `用户 ${user.username} 注册成功！`);
+            // 延迟导航，让用户看到成功消息
+            setTimeout(() => {
+              navigation.goBack();
+            }, 1500);
             // 清空表单
             setFormData({
               username: '',
@@ -84,7 +84,7 @@ export const RegisterScreen = () => {
         error: (error) => {
           console.error('RxJS错误:', error);
           setLoading(false);
-          Alert.alert('错误', '网络请求失败，请检查网络连接');
+          showToast.error('错误', '网络请求失败，请检查网络连接');
         },
       });
   };

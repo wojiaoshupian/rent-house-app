@@ -3,9 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 import { MainTabNavigator, TokenStatusMonitor } from './components';
-import { HomeScreen } from './screens/Home';
 import { RootStackParamList } from './types/navigation';
 import { RegisterScreen } from './screens/Register';
 import { LoginScreen } from './screens/Login';
@@ -47,11 +47,7 @@ export default function App() {
               },
             }}>
             <Stack.Screen name="Main" component={MainTabNavigator} options={{ headerShown: false }} />
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{ title: '库集成演示' }}
-            />
+           
           
       
          
@@ -147,6 +143,9 @@ export default function App() {
 
         {/* 开发环境Token状态监控 */}
         <TokenStatusMonitor />
+
+        {/* Toast 消息组件 */}
+        <Toast />
       </UserProvider>
     </SafeAreaProvider>
   );

@@ -61,7 +61,11 @@ class UtilityReadingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -102,7 +106,11 @@ class UtilityReadingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -153,7 +161,11 @@ class UtilityReadingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -198,7 +210,11 @@ class UtilityReadingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -242,7 +258,11 @@ class UtilityReadingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -300,7 +320,11 @@ class UtilityReadingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
@@ -342,7 +366,11 @@ class UtilityReadingService {
 
             throw error;
           })
-        ).subscribe(subscriber);
+        ).subscribe({
+          next: (data) => subscriber.next(data),
+          error: (error) => subscriber.error(error),
+          complete: () => subscriber.complete()
+        });
       }).catch(error => {
         console.error('❌ 认证检查失败:', error);
         subscriber.error(new Error('认证检查失败，请重试'));
